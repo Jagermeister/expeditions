@@ -3,7 +3,7 @@ import random
 
 # MCTS scalar.
 # Larger scalar will increase exploitation, smaller will increase exploration.
-SCALAR = 1 / math.sqrt(2.0)
+SCALAR = 0.5#1 / math.sqrt(2.0)
 
 class Node():
     def __init__(self, state, parent=None, move=None):
@@ -11,8 +11,7 @@ class Node():
         # Each time the node is exploited
         self.reward = 0
         # Sum of all simulated results
-        self.state = state#copy.deepcopy(state)
-        # IS DEEP COPY REQUIRED??
+        self.state = state
         # Model representation
         self.parent = parent
         self.children = []
@@ -27,11 +26,11 @@ class Node():
     def child_best(self):
         return sorted(self.children, key=lambda c:
                       c.reward / c.visits +
-                      math.sqrt(2 * math.log(self.visits) / c.visits))[-1]
+                      SCALAR * math.sqrt(2 * math.log(self.visits) / c.visits))[-1]
 
     @staticmethod
     def child_score(parent, child):
-        return child.reward / child.visits + math.sqrt(2 * math.log(parent.visits) / child.visits)
+        return child.reward / child.visits + SCALAR * math.sqrt(2 * math.log(parent.visits) / child.visits)
 
     def children_display(self):
         cards = sorted(self.state[2][0], key=lambda c: (c[0], c[1]))
@@ -48,7 +47,7 @@ class Node():
         #    print(('X' if c < 3 else str(c-1)) +' '+colors[i]+', ', end='')
         #print()
 
-        print(self.reward, self.visits)
+        print(self.visits, self.reward)
         children = sorted(self.children, 
             key=lambda c: c.visits, reverse=True)[:4]
         print('#\tReward\tVisits\tExploit\tExplore\tNext\tMove')
@@ -56,7 +55,7 @@ class Node():
             print('C{}\t{}\t{}\t{}\t{}\t{}\t{}'.format(
                 i, c.reward, c.visits,
                 round(c.reward / c.visits, 2),
-                round(math.sqrt(
+                round(SCALAR * math.sqrt(
                     2 * math.log(self.visits) / c.visits), 2),
                 round(Node.child_score(self, c), 2),
                 c.move))
@@ -67,7 +66,7 @@ class Node():
                     print(' >\t{}\t{}\t{}\t{}\t{}\t{}'.format(
                         cc.reward, cc.visits,
                         round(cc.reward / cc.visits, 2),
-                        round(math.sqrt(
+                        round(SCALAR * math.sqrt(
                             2 * math.log(c.visits) / cc.visits), 2),
                         round(Node.child_score(c, cc), 2),
                         cc.move))
@@ -126,52 +125,3 @@ def UCT(root_node, iterations):
         
     #root_node.children_display()
     return sorted(root_node.children, key=lambda c: c.visits)[-1]
-
-
-def UTCSearch(root, iterations):
-    for i in range(1, iterations):
-        if i % 1000:
-            print('simulation:', i)
-
-
-def EXPAND(node):
-    node.child_add()
-    return node.children[-1]
-
-
-def BESTCHILD(node, scalar):
-    bestScore = 0.0
-    bestChildren = []
-    for c in node.children:
-        exploit = c.reward / c.visits
-        explore = math.sqrt(2.0 * math.log(node.visits) / float(c.visits))
-        score = exploit + scalar * explore
-        if score == bestScore:
-            bestChildren.append(c)
-        elif score > bestScore:
-            bestScore = score
-            bestChildren = [c]
-    return random.choice(bestChildren)
-
-
-def TREEPOLICY(node):
-    # Explore / Exploit determination
-    while not node.terminal():
-        if node.children and (node.is_fully_expanded() or random.uniform(0, 1) < 0.5):
-            node = BESTCHILD(node, SCALAR)
-        else:
-            return EXPAND(node)
-    return node
-
-
-def DEFAULTPOLICY(state):
-    # Simulate to terminal point, returning reward
-    while not state.is_terminal:
-        state = state.state_step_random()
-    return state.reward
-
-
-def BACKUP(node, reward):
-    while node:
-        node.update(reward)
-        node = node.parent

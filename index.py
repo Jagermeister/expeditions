@@ -31,8 +31,9 @@ def run_games(n):
     print(n, stats)
     print(time.clock() - now)
 
-def record_move_stats(stats, move):
-    action, (play, pull) = move
+def record_move_stats(stats, move, evalulation):
+    action, (_, pull) = move
+    stats['evaluation'].append(evalulation)
     if action == 'play':
         stats['play_card'] += 1
     else: 
@@ -43,7 +44,7 @@ def record_move_stats(stats, move):
     else:
         stats['pull_discard'] += 1
 
-def run_mcts(n, modelState=None):
+def run_mcts(n, modelState=None, userInput=False, verbose=True):
     model = None
     if modelState:
         model = Model.make_from_state(modelState, False)
@@ -56,26 +57,52 @@ def run_mcts(n, modelState=None):
         'play_card': 0,
         'play_discard': 0,
         'pull_card': 0,
-        'pull_discard': 0
+        'pull_discard': 0,
+        'evaluation': []
     }
     while model.cardsInDeckCount:
-        root = ExpeditionNode(model.state())
-        node = UCT(root, n)
-        print(node.move, model)
-        node.parent.children_display()
+        node = UCT(ExpeditionNode(model.state()), n)
+        if verbose: print(node.move, model)
+        if verbose: node.parent.children_display()
         model.play_move(node.move)
-        record_move_stats(move_stats, node.move)
+        record_move_stats(move_stats, node.move, node.reward/node.visits)
         if model.cardsInDeckCount:
-            model.play_random_turn()
-        print(int(model.turnPly/2), model, flush=True)
-        input()
+            if userInput:
+                print(model)
+                p = model.player()
+                o = Player.play_options(p[Player.handIndex], p[Player.boardIndex])
+                for a in sorted(p[Player.handIndex], key=lambda c: (c[0], c[1])):
+                    print(
+                        '('+str(a[0])+','+ str('X' if a[1] < 3 else a[1]-1),
+                        end=')  ')
+                print()
+                for i, a in enumerate(o):
+                    print(
+                        str(i)+'/'+str(8 + i)+':'
+                        '('+str(a[0])+','+ str('X' if a[1] < 3 else a[1]-1),
+                        end=')  ')
+                print()
+                a = int(input())
+                action = 'discard' if a < 8 else 'play'
+                play = p[Player.handIndex][a] if a < 8 else o[a-8]
+                print(model.discard)
+                a = input()
+                a = 0 if a == '' else int(a)
+                pull = 'd' if a == 0 else a
+                print('>>', (action, (play, pull)))
+                model.play_move((action, (play, pull)))
+            else:
+                model.play_random_turn()
+        if verbose: print(int(model.turnPly/2), model, flush=True)
+        #input()
 
     print(model.winner,
         Player.board_score(model.players[0][Player.boardStateIndex]),
         Player.board_score(model.players[1][Player.boardStateIndex])
     )
     print(move_stats)
-    print(time.clock() - now)
+    print(time.clock() - now, flush=True)
+    return model.winner
 
 def profile_mcts(n):
     import cProfile, pstats, io
@@ -114,8 +141,16 @@ def repeat_N_move(n, state):
 
 if __name__ == '__main__':
     #run_games(1000)
-    import random
-    random.seed(11031987)
+    #import random
+    #random.seed(11031987)
     #profile_mcts(200)
-    run_mcts(4000, test)
+
+    games = 20
+    iterations = 100
+    run_mcts(iterations, test, False)
+
+    #result = 0
+    #for _ in range(games):
+    #    result += run_mcts(iterations, test, False, False)
+    #print(result, "/", games)
     #repeat_N_move(10, test)

@@ -129,7 +129,7 @@ class ExpeditionNode(Node):
     def advance_to_terminal(self):
         #From state, play random until end
         terminalModel = Model.make_from_state(self.state)
-        while terminalModel.cardsInDeckCount:
+        while terminalModel.cardsInDeckCount and terminalModel.winner is None:
             terminalModel.play_random_turn()
 
         self.is_terminal = True
@@ -140,4 +140,4 @@ class ExpeditionNode(Node):
         #    terminalModel.players[
         #        self.state[self.playerActiveIndex]
         #    ][Player.boardStateIndex])
-        self.terminal_reward = terminalModel.winner if self.state[self.playerActiveIndex] else -1*terminalModel.winner
+        self.terminal_reward = terminalModel.winner

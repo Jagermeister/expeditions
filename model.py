@@ -228,24 +228,24 @@ class Model:
             p[Player.handIndex].append(card)
             self.cardsInDeckCount -= 1
             #self.card_deal()
-        
-        self.playerActiveIndex = 0 if self.playerActiveIndex else 1
+
+        if self.turnPly > 400:
+            self.winner = -1
+            return
 
         # 3. Winner?
-        #print('fff', self.cardsInDeckCount, not self.cardsInDeckCount)
         if not self.cardsInDeckCount:
-            #print("GAME OVER")
             p1Score = Player.board_score(self.players[0][Player.boardStateIndex])
             p2Score = Player.board_score(self.players[1][Player.boardStateIndex])
             if p1Score > p2Score:
                 self.winner = 1
-                #print('Player 1 Wins: ', p1Score, p2Score)
             elif p2Score > p1Score:
                 self.winner = -1
-                #print('Player 2 Wins: ', p1Score, p2Score)
             else:
                 self.winner = 0
-                #print('Tie: ', p1Score, p2Score)
+            return
+
+        self.playerActiveIndex = 0 if self.playerActiveIndex else 1
 
     def state(self):
         return [
