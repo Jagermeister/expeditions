@@ -1,5 +1,7 @@
+from config import Config
+Config = Config()
 
-bitTemplate = (1 << 60) - 1
+bitTemplate = (1 << Config.cardsInDeckCount) - 1
 # This should be a parameter (How many total
 # cards? #60) but for clarity we keep it constant.
 def bit_mask(index):
@@ -19,13 +21,13 @@ class Card:
 
     @staticmethod
     def color(index):
-        return index // 12
+        return index // Config.cardsInColorCount
 
     @staticmethod
     def value(index):
-        return index % 12
+        return index % Config.cardsInColorCount
 
     @staticmethod
     def to_index(card):
         color, value = card
-        return 12 * color + value
+        return Config.cardsInColorCount * color + value

@@ -1,5 +1,7 @@
 import random
 from card import Card
+from config import Config
+Config = Config()
 
 # Any container of cards
 class Deck:
@@ -10,12 +12,10 @@ class Deck:
     @staticmethod
     def cardPeek(container, cardCount):
         unsetIndex = random.randrange(cardCount)
-        cs = container
         while unsetIndex:
-            cs &= cs - 1
+            container &= container - 1
             unsetIndex -= 1
-        index = len(bin(container)) - len(bin(cs).rstrip('0'))
-        return index
+        return len(bin(container)) - len(bin(container).rstrip('0'))
 
     @staticmethod
     def cardChoice(containerFrom, cardCount):
@@ -24,5 +24,5 @@ class Deck:
 
     @staticmethod
     def color(container, colorIndex):
-        # HARDCODED 12 is number of cards per color
-        return (container >> (colorIndex * 12)) & ((1 << 12) - 1)
+        colorCards = Config.cardsInColorCount
+        return (container >> (colorIndex * colorCards)) & ((1 << colorCards) - 1)

@@ -2,7 +2,7 @@ from mcts import Node
 from player import Player
 from card import Card
 from model import Model
-import copy
+from copy import deepcopy
 
 
 class ExpeditionNode(Node):
@@ -23,14 +23,9 @@ class ExpeditionNode(Node):
         self.moves_play_deal = []
         self.moves_play_pull = []
         super().__init__(state, parent, move)
-        #print('!!! New Node:', state, 'Player', self._player())
-        #print(self.moves_discard_deal)
-        #print(self.moves_discard_pull)
-        #print(self.moves_play_deal)
-        #print(self.moves_play_pull)
 
     def _player(self):
-        return self.state[self.player2Index] if self.state[self.playerActiveIndex] else self.state[self.player1Index]
+        return self.state[self.player2Index if self.state[self.playerActiveIndex] else self.player1Index]
 
     def _discard(self):
         return self.state[self.discardIndex]
@@ -85,9 +80,7 @@ class ExpeditionNode(Node):
 
     def advance_by_move(self, move):
         action, (play, pull) = move
-        state = copy.deepcopy(self.state)
-        #print('>',state)
-        #print(move, action, play, pull)
+        state = deepcopy(self.state)
         if action == 'discard':
             hand, discard, discardLastColor = Model.play_option_discard(
                 state[4 if state[self.playerActiveIndex] else 2][Player.handIndex],
@@ -133,11 +126,4 @@ class ExpeditionNode(Node):
             terminalModel.play_random_turn()
 
         self.is_terminal = True
-        #print(terminalModel, terminalModel.winner)
-        #print(terminalModel.cardsInDeckCount)
-
-        #self.terminal_reward = Player.board_score(
-        #    terminalModel.players[
-        #        self.state[self.playerActiveIndex]
-        #    ][Player.boardStateIndex])
         self.terminal_reward = terminalModel.winner

@@ -1,6 +1,8 @@
 from model import Model
 from mcts_model import ExpeditionNode
 from mcts import UCT
+from colorama import init, Fore, Back, Style
+init()
 
 import time
 from player import Player
@@ -62,7 +64,13 @@ def run_mcts(n, modelState=None, userInput=False, verbose=True):
     }
     while model.cardsInDeckCount:
         node = UCT(ExpeditionNode(model.state()), n)
-        if verbose: print(node.move, model)
+        if verbose:
+            print('___________________________________________')
+            print('State:', model)
+            print(Back.WHITE + Fore.RED, 'Selected Move:', end='')
+            print(Style.RESET_ALL, end='')
+            print(ExpeditionNode.move_display(node.move), Style.RESET_ALL, flush=True)
+
         if verbose: node.parent.children_display()
         model.play_move(node.move)
         record_move_stats(move_stats, node.move, node.reward/node.visits)
@@ -92,9 +100,12 @@ def run_mcts(n, modelState=None, userInput=False, verbose=True):
                 print('>>', (action, (play, pull)))
                 model.play_move((action, (play, pull)))
             else:
-                model.play_random_turn()
-        if verbose: print(int(model.turnPly/2), model, flush=True)
-        #input()
+                move = model.play_random_turn()
+                if verbose:
+                    print('\r\n' + Back.RED + Fore.WHITE +
+                        'Opponent\'s move:',
+                        ExpeditionNode.move_display(move),
+                        Style.RESET_ALL, flush=True)
 
     print(model.winner,
         Player.board_score(model.players[0][Player.boardStateIndex]),
@@ -145,12 +156,13 @@ if __name__ == '__main__':
     #random.seed(11031987)
     #profile_mcts(200)
 
-    games = 20
-    iterations = 100
-    run_mcts(iterations, test, False)
+    iterations = 2000
+    run_mcts(iterations)
 
     #result = 0
+    #games = 20
     #for _ in range(games):
-    #    result += run_mcts(iterations, test, False, False)
+    #    result += run_mcts(iterations, None, False, False)
     #print(result, "/", games)
-    #repeat_N_move(10, test)
+
+    ##repeat_N_move(10, test)

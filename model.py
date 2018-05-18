@@ -2,8 +2,8 @@ from config import Config
 from card import Card
 from deck import Deck
 from player import Player
-import random
-import copy
+from random import randrange
+from copy import deepcopy
 Config = Config()
 
 class Model:
@@ -15,7 +15,7 @@ class Model:
         # Per color list of card values
         self.players = []
         self.playerActiveIndex = 0
-        # Index of player who will next
+        # Index of player who will act next
         self.turnPly = 0
         # Ply is a half turn. A full turn is
         # when both players have played.
@@ -27,7 +27,7 @@ class Model:
 
     @staticmethod
     def make_from_state(state, replaceOpponent=True):
-        state = copy.deepcopy(state)
+        state = deepcopy(state)
         m = Model()
         m.deck = state[0]
         m.playerActiveIndex = state[1]
@@ -42,7 +42,7 @@ class Model:
                 m.deck = Card.add(m.deck, Card.to_index(c))
                 m.cardsInDeckCount += 1
 
-            for _ in range(8):
+            for _ in range(Config.cardsInHandCount):
                 m.deck, card = Deck.cardChoice(m.deck, m.cardsInDeckCount)
                 hand.append(card)
                 m.cardsInDeckCount -= 1
@@ -53,19 +53,18 @@ class Model:
         return m
 
     def __str__(self):
-        print('Deck', self.cardsInDeckCount, self.playerActiveIndex)#, bin(self.deck))
-        print('Player1.Hand', self.players[0][Player.handIndex])
-        print('Player1.Board', self.players[0][Player.boardIndex], bin(self.players[0][Player.boardStateIndex]))
-        print('Discard', self.discard)
-        print('Player2.Board', self.players[1][Player.boardIndex], bin(self.players[1][Player.boardStateIndex]))
-        print('Player2.Hand', self.players[1][Player.handIndex])
-        print('Score:',
+        print('\tlen(deck) =', self.cardsInDeckCount)
+        print('\tP1.Hand', self.players[0][Player.handIndex])
+        print('\tP1.Board', self.players[0][Player.boardIndex], bin(self.players[0][Player.boardStateIndex]))
+        print('\tDiscard', self.discard)
+        print('\tP2.Board', self.players[1][Player.boardIndex], bin(self.players[1][Player.boardStateIndex]))
+        print('\tP2.Hand', self.players[1][Player.handIndex])
+        print('\tScore:',
             Player.board_score(self.players[0][Player.boardStateIndex]),
             Player.board_score(self.players[1][Player.boardStateIndex]))
         return ""
 
     def player(self):
-        # Active Player
         return self.players[self.playerActiveIndex]
 
     @staticmethod
@@ -78,25 +77,22 @@ class Model:
 
     def card_deal(self):
         # Deck to Hand
+        #self.deck, card, self.cardsInDeckCount = Deck.cardChoice(
+        #    self.deck, self.cardsInDeckCount)
+        #hand = self.player()[Player.handIndex]
+        #hand.append(card)
         self.player()[Player.handIndex], self.deck = Model.pull_option_deal(
             self.player()[Player.handIndex],
             self.deck,
             self.cardsInDeckCount
         )
         self.cardsInDeckCount -= 1
-        #self.deck, card, self.cardsInDeckCount = Deck.cardChoice(
-        #    self.deck, self.cardsInDeckCount)
-        #hand = self.player()[Player.handIndex]
-        #hand.append(card)
         self.playerActiveIndex = 0 if self.playerActiveIndex else 1
 
     def setup(self):
-        # Deck of cards
         self.cardsInDeckCount = Config.cardsInDeckCount
         self.deck = Deck.create(self.cardsInDeckCount)
-        # Discard pile
         self.discard = [[] for _ in range(Config.colorCount)]
-        # Players
         self.players = [
             Player.create(),
             Player.create()
@@ -107,22 +103,21 @@ class Model:
 
     @staticmethod
     def play_option_discard(hand, card, discard):
-        #print(hand, card, discard)
         hand.remove(card)
         discard.append(card[Card.valueIndex])
         return (hand, discard, card[Card.colorIndex])
 
     def card_discard(self, card):
         # Hand to Discard
+        #self.player()[Player.handIndex].remove(card)
+        #self.discard[card[Card.colorIndex]].append(card[Card.valueIndex])
+        #self.discardLastColor = card[Card.colorIndex]
         hand = self.player()[Player.handIndex]
         discard = self.discard[card[Card.colorIndex]]
         hand, discard, discardColor = Model.play_option_discard(hand, card, discard)
         self.player()[Player.handIndex] = hand
         self.discard[card[Card.colorIndex]] = discard
         self.discardLastColor = discardColor
-        #self.player()[Player.handIndex].remove(card)
-        #self.discard[card[Card.colorIndex]].append(card[Card.valueIndex])
-        #self.discardLastColor = card[Card.colorIndex]
 
     @staticmethod
     def play_option_play(hand, card, boardState):
@@ -133,6 +128,10 @@ class Model:
 
     def card_play(self, card):
         # Hand to Board
+        #color, value = card
+        #p[Player.handIndex].remove(card)
+        #p[Player.boardIndex][color] = value
+        #p[Player.boardStateIndex] |= 1 << (value + Config.cardsInColorCount * color)
         p = self.player()
         color, _ = card
         hand, board, boardState = Model.play_option_play(
@@ -142,11 +141,6 @@ class Model:
         p[Player.handIndex] = hand
         p[Player.boardIndex][color] = board
         p[Player.boardStateIndex] = boardState
-
-        #color, value = card
-        #p[Player.handIndex].remove(card)
-        #p[Player.boardIndex][color] = value
-        #p[Player.boardStateIndex] |= 1 << (value + Config.cardsInColorCount * color)
         self.discardLastColor = None
 
     @staticmethod
@@ -156,6 +150,7 @@ class Model:
 
     def card_pull(self, color):
         # Discard to Hand
+        #p[Player.handIndex].append((color, self.discard[color].pop()))
         p = self.player()
         hand, discard = Model.pull_option_pull(
             p[Player.handIndex],
@@ -164,7 +159,6 @@ class Model:
         )
         p[Player.handIndex] = hand
         self.discard[color] = discard
-        #p[Player.handIndex].append((color, self.discard[color].pop()))
         self.playerActiveIndex = 0 if self.playerActiveIndex else 1
 
     def play_move(self, move):
@@ -182,70 +176,62 @@ class Model:
 
         # 3. Winner?
         if not self.cardsInDeckCount:
-            #print("GAME OVER")
-            #print(self)
             p1Score = Player.board_score(self.players[0][Player.boardStateIndex])
             p2Score = Player.board_score(self.players[1][Player.boardStateIndex])
-            if p1Score > p2Score:
-                self.winner = 1
-                #print('Player 1 Wins: ', p1Score, p2Score)
-            elif p2Score > p1Score:
-                self.winner = -1
-                #print('Player 2 Wins: ', p1Score, p2Score)
-            else:
-                self.winner = 0
-                #print('Tie: ', p1Score, p2Score)
+            self.winner = 1 if p1Score > p2Score else (-1 if p2Score > p1Score else 0)
 
     def play_random_turn(self):
         self.turnPly += 1
         p = self.player()
         # 1. PLAY: From hand to (board or discard)
         o = Player.play_options(p[Player.handIndex], p[Player.boardIndex])
-        a = random.randrange(0, Config.cardsInHandCount + len(o))
+        a = randrange(0, Config.cardsInHandCount + len(o))
         if a < Config.cardsInHandCount:
-            color, value = p[Player.handIndex].pop(a)
+            #self.card_discard(p[Player.handIndex][a])
+            play = 'discard'
+            card = p[Player.handIndex].pop(a)
+            color, value = card
             self.discard[color].append(value)
             self.discardLastColor = color
-            #self.card_discard(p[Player.handIndex][a])
         else:
+            #self.card_play(o[a-Config.cardsInHandCount])
+            play = 'play'
             card = o[a-Config.cardsInHandCount]
             p[Player.handIndex].remove(card)
             color, value = card
             p[Player.boardIndex][color] = value
             p[Player.boardStateIndex] |= 1 << (value + 12 * color)
-            #self.card_play(o[a-Config.cardsInHandCount])
 
         # 2. PULL: From (deck or discard) to hand
         o = Player.pull_options(self.discard, self.discardLastColor)
-        a = random.randrange(0, 1 + len(o))
+        a = randrange(0, 1 + len(o))
         if o and a:
+            #self.card_pull(o[a-1])
             color = o[a-1]
+            pull = color
             card = (color, self.discard[color].pop())
             p[Player.handIndex].append(card)
-            #self.card_pull(o[a-1])
         else:
+            #self.card_deal()
+            pull = 'd'
             self.deck, card = Deck.cardChoice(self.deck, self.cardsInDeckCount)
             p[Player.handIndex].append(card)
             self.cardsInDeckCount -= 1
-            #self.card_deal()
 
-        if self.turnPly > 400:
+        move = (play, (card, pull))
+        if self.turnPly > Config.turnsUntilForcedLoss:
             self.winner = -1
-            return
+            return move
 
         # 3. Winner?
         if not self.cardsInDeckCount:
             p1Score = Player.board_score(self.players[0][Player.boardStateIndex])
             p2Score = Player.board_score(self.players[1][Player.boardStateIndex])
-            if p1Score > p2Score:
-                self.winner = 1
-            elif p2Score > p1Score:
-                self.winner = -1
-            else:
-                self.winner = 0
-            return
+            self.winner = 1 if p1Score > p2Score else (-1 if p2Score > p1Score else 0)
+            return move
 
         self.playerActiveIndex = 0 if self.playerActiveIndex else 1
+        return move
 
     def state(self):
         return [

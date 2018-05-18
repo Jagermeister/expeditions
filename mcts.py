@@ -1,9 +1,13 @@
-import math
-import random
+from math import sqrt, log
+from random import randrange
+from config import Config
+Config = Config()
+from colorama import init, Fore, Back, Style
+init()
 
-# MCTS scalar.
-# Larger scalar will increase exploitation, smaller will increase exploration.
-SCALAR = 0.5#1 / math.sqrt(2.0)
+# Monte Carlo Tree Search
+SCALAR = 1 / sqrt(2.0)
+#Larger values will increase exploitation, smaller will increase exploration
 
 class Node():
     def __init__(self, state, parent=None, move=None):
@@ -26,52 +30,51 @@ class Node():
     def child_best(self):
         return sorted(self.children, key=lambda c:
                       c.reward / c.visits +
-                      SCALAR * math.sqrt(2 * math.log(self.visits) / c.visits))[-1]
+                      SCALAR * sqrt(2 * log(self.visits) / c.visits))[-1]
 
     @staticmethod
     def child_score(parent, child):
-        return child.reward / child.visits + SCALAR * math.sqrt(2 * math.log(parent.visits) / child.visits)
+        return Node.exploit_score(child) + Node.explore_score(parent, child)
+    @staticmethod
+    def exploit_score(child):
+        return child.reward / child.visits
+    @staticmethod
+    def explore_score(parent, child):
+        return SCALAR * sqrt(2 * log(parent.visits) / child.visits)
+    @staticmethod
+    def move_display(move):
+        play, (card, pull) = move
+        color, value = card
+        _, c, bColor, fColor = Config.colors[color]
+        value_display = 'X' if value < Config.betCount else str(value + 2 - Config.betCount)
+        pull_display = 'pull from deck' if pull == 'd' else 'pull discard ' + Config.colors[pull][0] + '(' + str(pull) + ')'
+        return bColor + fColor + (' ' if len(value_display) else '') + value_display + c + ' ' + play + ',\t' + pull_display
 
-    def children_display(self):
-        cards = sorted(self.state[2][0], key=lambda c: (c[0], c[1]))
-        colors = {
-            0: 'red',
-            1: 'yellow',
-            2: 'blue',
-            3: 'green',
-            4: 'white'
-        }
-        #print('Colors: ', colors)
-        #print('Cards: ', end='')
-        #for i, c in cards:
-        #    print(('X' if c < 3 else str(c-1)) +' '+colors[i]+', ', end='')
-        #print()
+    def children_display(self, children=None, depth=2, maxDepth=2, top=4):
+        if not depth:
+            return
 
-        print(self.visits, self.reward)
-        children = sorted(self.children, 
-            key=lambda c: c.visits, reverse=True)[:4]
-        print('#\tReward\tVisits\tExploit\tExplore\tNext\tMove')
+        if children is None:
+            children = self.children
+
+        d = maxDepth-depth
+        children = sorted(children, key=lambda c: c.visits, reverse=True)[:top]
+        print('{}\tReward\tVisits\tExploit\tExplore\tNext\tPlay Move\tPull Move'.format(
+            '#' if not d else '>VV'
+        ))
         for i, c in enumerate(children):
-            print('C{}\t{}\t{}\t{}\t{}\t{}\t{}'.format(
+            exploit, explore = Node.exploit_score(c), Node.explore_score(self, c)
+            print('{}{}{}\t{}\t{}\t{}\t{}\t{}\t{}{}'.format(
+                '>'*d,
+                'ABCDEF'[d],
                 i, c.reward, c.visits,
-                round(c.reward / c.visits, 2),
-                round(SCALAR * math.sqrt(
-                    2 * math.log(self.visits) / c.visits), 2),
-                round(Node.child_score(self, c), 2),
-                c.move))
+                round(exploit, 2),
+                round(explore, 2),
+                round(exploit + explore, 2),
+                Node.move_display(c.move),
+                Style.RESET_ALL))
             if i == 0 and children[i].children:
-                subchilds = sorted(children[i].children, 
-                    key=lambda c: c.visits, reverse=True)[:4]
-                for ii, cc in enumerate(subchilds):
-                    print(' >\t{}\t{}\t{}\t{}\t{}\t{}'.format(
-                        cc.reward, cc.visits,
-                        round(cc.reward / cc.visits, 2),
-                        round(SCALAR * math.sqrt(
-                            2 * math.log(c.visits) / cc.visits), 2),
-                        round(Node.child_score(c, cc), 2),
-                        cc.move))
-
-
+                self.children_display(children[i].children, depth-1)
 
     def reward_update(self, reward):
         self.reward += reward
@@ -86,16 +89,13 @@ class Node():
         pass
 
     def advance_by_move(self, move):
+        # Return new state
         pass
 
 import copy
 def UCT(root_node, iterations):
-    for i in range(1, iterations+1): 
-        if i % 5000 == 0:
-            print('simulation:', i)
-        # Init
-        #print('!! ROOT', root_node.state)
-        #root_node.children_display()
+    for i in range(1, iterations+1):
+        if i % 5000 == 0: print('simulation:', i)
         node = root_node
 
         # Select candidate
@@ -104,24 +104,19 @@ def UCT(root_node, iterations):
 
         # Expand
         if node.untried_move_count:
-            move = node.move_untried(random.randrange(0, node.untried_move_count))
-            #print('move', move)
-            #print('before', node.state)
+            move = node.move_untried(randrange(0, node.untried_move_count))
             state = node.advance_by_move(move)
-            #print('after', state)
             node.child_add(state, move)
-            #node.children_display()
             node = node.children[-1]
 
-        #Rollout
+        # Rollout
         if not node.is_terminal:
             node.advance_to_terminal()
 
-        #Backpropagate
+        # Backpropagate
         reward = node.terminal_reward
         while node:
             node.reward_update(reward)
             node = node.parent
-        
-    #root_node.children_display()
+
     return sorted(root_node.children, key=lambda c: c.visits)[-1]
