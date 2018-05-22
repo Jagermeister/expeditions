@@ -1,6 +1,6 @@
 from math import sqrt, log
 from random import randrange
-from config import Config
+from model.config import Config
 Config = Config()
 from colorama import init, Fore, Back, Style
 init()
@@ -47,8 +47,13 @@ class Node():
         color, value = card
         _, c, bColor, fColor = Config.colors[color]
         value_display = 'X' if value < Config.betCount else str(value + 2 - Config.betCount)
-        pull_display = 'pull from deck' if pull == 'd' else 'pull discard ' + Config.colors[pull][0] + '(' + str(pull) + ')'
-        return bColor + fColor + (' ' if len(value_display) else '') + value_display + c + ' ' + play + ',\t' + pull_display
+        if pull == 'd':
+            pull_display = 'pull from deck'
+        else:
+            name, _, pbColor, pfColor = Config.colors[pull]
+            pull_display = 'pull discard ' + pbColor + pfColor + name + ' (' + str(pull) + ')'
+        return bColor + fColor + (' ' if len(value_display) else '') + value_display + c + ' ' + \
+             Back.BLACK + Fore.WHITE + play + ',\t' + pull_display
 
     def children_display(self, children=None, depth=2, maxDepth=2, top=4):
         if not depth:

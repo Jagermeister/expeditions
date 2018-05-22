@@ -1,7 +1,7 @@
-from mcts import Node
-from player import Player
-from card import Card
-from model import Model
+from .mcts import Node
+from model.player import Player
+from model.card import Card
+from model.model import Expedition as M
 from copy import deepcopy
 
 
@@ -82,7 +82,7 @@ class ExpeditionNode(Node):
         action, (play, pull) = move
         state = deepcopy(self.state)
         if action == 'discard':
-            hand, discard, discardLastColor = Model.play_option_discard(
+            hand, discard, discardLastColor = M.play_option_discard(
                 state[4 if state[self.playerActiveIndex] else 2][Player.handIndex],
                 play,
                 state[self.discardIndex][play[Card.colorIndex]])
@@ -90,7 +90,7 @@ class ExpeditionNode(Node):
             state[self.discardIndex][play[Card.colorIndex]] = discard
             state[self.discardLastColorIndex] = discardLastColor
         else:
-            hand, board, boardState = Model.play_option_play(
+            hand, board, boardState = M.play_option_play(
                 state[4 if state[self.playerActiveIndex] else 2][Player.handIndex],
                 play,
                 state[4 if state[self.playerActiveIndex] else 2][Player.boardStateIndex])
@@ -100,7 +100,7 @@ class ExpeditionNode(Node):
             state[self.discardLastColorIndex] = None
 
         if pull == 'd':
-            hand, deck = Model.pull_option_deal(
+            hand, deck = M.pull_option_deal(
                 state[4 if state[self.playerActiveIndex] else 2][Player.handIndex],
                 state[self.deckIndex],
                 state[self.deckCardCount])
@@ -108,7 +108,7 @@ class ExpeditionNode(Node):
             state[self.deckIndex] = deck
             state[self.deckCardCount] -= 1
         else:
-            hand, discard = Model.pull_option_pull(
+            hand, discard = M.pull_option_pull(
                 state[4 if state[self.playerActiveIndex] else 2][Player.handIndex],
                 state[self.discardIndex][pull],
                 pull
@@ -121,9 +121,9 @@ class ExpeditionNode(Node):
 
     def advance_to_terminal(self):
         #From state, play random until end
-        terminalModel = Model.make_from_state(self.state)
-        while terminalModel.cardsInDeckCount and terminalModel.winner is None:
-            terminalModel.play_random_turn()
+        terminalM = M.make_from_state(self.state)
+        while terminalM.cardsInDeckCount and terminalM.winner is None:
+            terminalM.play_random_turn()
 
         self.is_terminal = True
-        self.terminal_reward = terminalModel.winner
+        self.terminal_reward = terminalM.winner

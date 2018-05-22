@@ -1,5 +1,5 @@
 import unittest
-from player import Player
+from src.model.player import Player
 
 class TestPlayer(unittest.TestCase):
     def test_isHandAttributeSet(self):

@@ -1,14 +1,17 @@
-from model import Model
-from mcts_model import ExpeditionNode
-from mcts import UCT
+from model.model import Expedition
+from mcts.mcts_model import ExpeditionNode
+from mcts.mcts import UCT
+
 from colorama import init, Fore, Back, Style
 init()
+from termcolor import cprint, colored
+from pyfiglet import figlet_format
 
 import time
-from player import Player
+from model.player import Player
 
 def run_games(n):
-    game = Model()
+    game = Expedition()
     now = time.clock()
     stats = {
         'turnPlys': 0,
@@ -49,9 +52,9 @@ def record_move_stats(stats, move, evalulation):
 def run_mcts(n, modelState=None, userInput=False, verbose=True):
     model = None
     if modelState:
-        model = Model.make_from_state(modelState, False)
+        model = Expedition.make_from_state(modelState, False)
     else:
-        model = Model()
+        model = Expedition()
         model.setup()
     
     now = time.clock()
@@ -66,7 +69,7 @@ def run_mcts(n, modelState=None, userInput=False, verbose=True):
         node = UCT(ExpeditionNode(model.state()), n)
         if verbose:
             print('___________________________________________')
-            print('State:', model)
+            print('Turn:', int(model.turnPly/2), 'State:', model)
             print(Back.WHITE + Fore.RED, 'Selected Move:', end='')
             print(Style.RESET_ALL, end='')
             print(ExpeditionNode.move_display(node.move), Style.RESET_ALL, flush=True)
@@ -115,11 +118,11 @@ def run_mcts(n, modelState=None, userInput=False, verbose=True):
     print(time.clock() - now, flush=True)
     return model.winner
 
-def profile_mcts(n):
+def profile(function):
     import cProfile, pstats, io
     pr = cProfile.Profile()
     pr.enable()
-    run_mcts(n)
+    function()
     pr.disable()
     s = io.StringIO()
     sortby = 'cumulative'
@@ -130,17 +133,13 @@ def profile_mcts(n):
 
 # 5000 games in 14s w   1849770867 ply: 'p1': 2436, 'p2': 2499, 'tie': 65
 test = [
-    792280796199869815,
-    0,
+    792280796199869815, 0,
     [[(4, 0), (0, 9), (3, 10), (3, 0), (1, 1), (1, 9), (3, 2), (0, 7)],
-    [-1, -1, -1, -1, -1],
-    0],
+    [-1, -1, -1, -1, -1], 0],
     [[], [], [], [], []],
     [[(1, 3), (2, 2), (0, 3), (1, 6), (4, 8), (3, 3), (2, 6), (4, 10)],
-    [-1, -1, -1, -1, -1],
-    0],
-    None,
-    44]
+    [-1, -1, -1, -1, -1], 0],
+    None, 44]
 
 def repeat_N_move(n, state):
     print(state)
@@ -151,6 +150,15 @@ def repeat_N_move(n, state):
         node.parent.children_display()
 
 if __name__ == '__main__':
+    #Introduction
+    cprint(figlet_format('Expeditions!', font='big'), 'yellow', 'on_blue', attrs=['bold'])
+    #Game settings explained
+    from model.config import Config
+    Config = Config()
+    print(Config)
+
+    #Run Game
+
     #run_games(1000)
     #import random
     #random.seed(11031987)

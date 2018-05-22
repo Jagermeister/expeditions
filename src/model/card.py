@@ -1,4 +1,4 @@
-from config import Config
+from .config import Config
 Config = Config()
 
 bitTemplate = (1 << Config.cardsInDeckCount) - 1

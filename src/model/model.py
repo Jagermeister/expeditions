@@ -1,12 +1,12 @@
-from config import Config
-from card import Card
-from deck import Deck
-from player import Player
+from .config import Config
+from .card import Card
+from .deck import Deck
+from .player import Player
 from random import randrange
 from copy import deepcopy
 Config = Config()
 
-class Model:
+class Expedition:
     def __init__(self):
         self.deck = 0b0
         # Binary representation of the cards
@@ -28,7 +28,7 @@ class Model:
     @staticmethod
     def make_from_state(state, replaceOpponent=True):
         state = deepcopy(state)
-        m = Model()
+        m = Expedition()
         m.deck = state[0]
         m.playerActiveIndex = state[1]
         m.players = [
@@ -81,7 +81,7 @@ class Model:
         #    self.deck, self.cardsInDeckCount)
         #hand = self.player()[Player.handIndex]
         #hand.append(card)
-        self.player()[Player.handIndex], self.deck = Model.pull_option_deal(
+        self.player()[Player.handIndex], self.deck = Expedition.pull_option_deal(
             self.player()[Player.handIndex],
             self.deck,
             self.cardsInDeckCount
@@ -114,7 +114,7 @@ class Model:
         #self.discardLastColor = card[Card.colorIndex]
         hand = self.player()[Player.handIndex]
         discard = self.discard[card[Card.colorIndex]]
-        hand, discard, discardColor = Model.play_option_discard(hand, card, discard)
+        hand, discard, discardColor = Expedition.play_option_discard(hand, card, discard)
         self.player()[Player.handIndex] = hand
         self.discard[card[Card.colorIndex]] = discard
         self.discardLastColor = discardColor
@@ -134,7 +134,7 @@ class Model:
         #p[Player.boardStateIndex] |= 1 << (value + Config.cardsInColorCount * color)
         p = self.player()
         color, _ = card
-        hand, board, boardState = Model.play_option_play(
+        hand, board, boardState = Expedition.play_option_play(
             p[Player.handIndex],
             card,
             p[Player.boardStateIndex])
@@ -152,7 +152,7 @@ class Model:
         # Discard to Hand
         #p[Player.handIndex].append((color, self.discard[color].pop()))
         p = self.player()
-        hand, discard = Model.pull_option_pull(
+        hand, discard = Expedition.pull_option_pull(
             p[Player.handIndex],
             self.discard[color],
             color

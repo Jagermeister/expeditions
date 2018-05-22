@@ -1,6 +1,6 @@
 import unittest
-from player import Player
-from card import Card
+from src.model.player import Player
+from src.model.card import Card
 
 class TestPlayerPlayOptions(unittest.TestCase):
 

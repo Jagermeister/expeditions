@@ -1,6 +1,6 @@
-from card import Card
-from deck import Deck
-from config import Config
+from .card import Card
+from .deck import Deck
+from .config import Config
 Config = Config()
 
 class Player:

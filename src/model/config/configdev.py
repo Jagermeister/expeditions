@@ -1,6 +1,7 @@
+from .configuration import Configuration
 from colorama import Back, Fore
 
-class ConfigDevelopment:
+class Development(Configuration):
     colorCount = 3
     #How many different suites/colors are there?
     valueCount = 6
@@ -21,11 +22,3 @@ class ConfigDevelopment:
         1: ('Yellow', 'y', Back.YELLOW, Fore.BLACK),
         2: ('Blue', 'b', Back.BLACK, Back.BLUE)
     }
-
-    @property
-    def cardsInColorCount(self):
-        return self.valueCount + self.betCount
-
-    @property
-    def cardsInDeckCount(self):
-        return self.colorCount * self.cardsInColorCount

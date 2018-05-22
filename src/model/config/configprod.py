@@ -1,6 +1,7 @@
+from .configuration import Configuration
 from colorama import Back, Fore
 
-class ConfigProduction:
+class Production(Configuration):
     colorCount = 5
     #How many different suites/colors are there?
     valueCount = 9
@@ -23,11 +24,3 @@ class ConfigProduction:
         3: ('Green', 'g', Back.BLACK, Fore.GREEN),
         4: ('White', 'w', Back.BLACK, Fore.WHITE)
     }
-
-    @property
-    def cardsInColorCount(self):
-        return self.valueCount + self.betCount
-
-    @property
-    def cardsInDeckCount(self):
-        return self.colorCount * self.cardsInColorCount

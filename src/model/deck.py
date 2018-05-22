@@ -1,6 +1,6 @@
 import random
-from card import Card
-from config import Config
+from .card import Card
+from .config import Config
 Config = Config()
 
 # Any container of cards
