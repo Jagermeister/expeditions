@@ -1,10 +1,10 @@
 """Entry point"""
 from view import viewfactory as vf
-from model import model as ex
+from model.main import GamesManager
 
 def main():
     """simple game loop to link a view with our model logic"""
-    model = ex.Expedition()
+    model = GamesManager()
     view = vf.factory_create()
     view.init(model)
     while 1:

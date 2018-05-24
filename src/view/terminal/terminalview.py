@@ -1,5 +1,4 @@
 """Terminal view for model display"""
-from view import viewinterface as v
 import os
 import time
 
@@ -7,6 +6,9 @@ from colorama import init, Fore, Back, Style
 init()
 from termcolor import cprint, colored
 from pyfiglet import figlet_format
+
+from view import viewinterface as v
+
 
 class TerminalState(object):
     """describe mode of terminal view from intial load, menu, and game"""
@@ -16,19 +18,15 @@ class TerminalState(object):
 
 class TerminalView(v.ViewInterface):
 
-    def init(self, model):
+    def init(self, game_manager):
         """Keep model and start new game"""
-        self.model = model
-        self.model.setup()
+        self.game_manager = game_manager
         self.view_state = TerminalState.load
         self.menu_key = 0 #Default key
-        self.menu_options = [
-                "Mini Game",
-                "Prod Game",
-                "Custom Game",
-                "Load Analysis",
-                "Quit"
-            ]
+        self.menu_options = [k for k in self.game_manager.games.keys()]
+        self.menu_options.extend([
+            "Quit"
+        ])
 
     def game_new(self):
         print('new game started!')
@@ -47,18 +45,13 @@ class TerminalView(v.ViewInterface):
                     self.menu_key += 1
 
             if not answer:
-                if self.menu_key == 0:
-                    self.game_new()
-                elif self.menu_key == 1:
-                    seed = input("""SEED?
-                        Leave blank for random generation
-                        'L' for last seed\n\r>""").upper()
-                    self.game_new(seed)
-                elif self.menu_key == 2:
-                    self.game_new("E5", False)
-                elif self.menu_key == len(self.menu_options)-1:
+                if self.menu_key == len(self.menu_options)-1:
                     raise SystemExit
-
+                else:
+                    self.game_manager.game_select('Tic Tac Toe')
+                    print(self.game_manager.game.name)
+                    self.game_manager.game_play()
+                    input()
 
     def update(self):
         """no internal state to update for terminal view"""
