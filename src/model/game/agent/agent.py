@@ -1,10 +1,10 @@
-from ..game import Game
+#from ..game import Game
 
 class Agent:
+    name = None
 
-    def __init__(self, name, model):
-        assert isinstance(model, Game)
-        self.name = name
+    def __init__(self, model):
+        #assert isinstance(model, Game)
         self.model = model
 
     def update(self, move_opponent):
