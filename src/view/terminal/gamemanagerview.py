@@ -110,8 +110,9 @@ class PlayPhase():
         self.game_manager.play_turn()
 
     def display(self):
-        print('Play Mode')
-        self.game_manager.game.state_display(self.game_manager.game.state)
+        pass
+        #print('Play Mode')
+        #self.game_manager.game.state_display(self.game_manager.game.state)
 
 class ExaminePhase():
     
@@ -139,7 +140,18 @@ class ExaminePhase():
     def display(self):
         display_clear()
         print('Examine Mode')
+        for i, p in enumerate(self.game_manager.game.players):
+            print('Player {}: {}'.format(i+1, p.name))
         self.game_manager.game.state_display(self.state)
+        if 0 in self.game_manager.game.board:
+            print('Winner: Player {}'.format(1 if self.game_manager.game.turn_ply % 2 else 2))
+        else:
+            r = self.game_manager.game.reward()
+            if r == 0.5:
+                print('Tied!')
+            else:
+                print('Winner: 2')
+
         print('\n\r')
         self.list_displayer.display()
 
@@ -156,6 +168,9 @@ class GameManagerView():
         self.game_manager = GamesManager()
         self.state = GameManagerViewState.init
         self.phase = None
+        
+        self.games = 0
+        self.game_score = [0, 0, 0]
 
     def handle_events(self):
         if self.phase:
@@ -169,8 +184,36 @@ class GameManagerView():
             self.state = GameManagerViewState.play
             self.phase = PlayPhase(self.game_manager)
         elif self.state == GameManagerViewState.play and self.phase.is_complete:
-            self.state = GameManagerViewState.examine
-            self.phase = ExaminePhase(self.game_manager)
+            self.games += 1
+            self.game_manager.game.state_display(self.game_manager.game.state)
+            if 0 in self.game_manager.game.board:
+                self.game_score[0 if self.game_manager.game.turn_ply % 2 else 1] += 1
+                print('Player {} wins'.format(1 if self.game_manager.game.turn_ply % 2 else 2))
+            else:
+                r = self.game_manager.game.reward()
+                self.game_score[2 if r == 0.5 else 0] += 1
+                if r == 0.5:
+                    print('Tied!')
+                else:
+                    print("Player 1 Won")
+
+            if self.games < 100:
+                self.game_score
+                self.phase = PlayPhase(self.game_manager)
+                self.game_manager.game.board = [0]*9
+                self.game_manager.game.turn_ply = 0
+
+            print('{} Wins by player: {}, {}; Ties: {}'.format(
+                self.games,
+                self.game_score[0],
+                self.game_score[1],
+                self.game_score[2]
+            ))
+
+            if self.games == 100:
+                input('Game Over')
+                self.state = GameManagerViewState.examine
+                self.phase = ExaminePhase(self.game_manager)
 
         self.phase.update()
 

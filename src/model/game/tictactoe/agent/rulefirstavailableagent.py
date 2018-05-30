@@ -4,4 +4,4 @@ class RuleFirstAvailableAgent(Agent):
     name = 'Rule: First available'
 
     def move_from_state(self):
-        return self.model.moves_available()[0]
+        return self.model.moves_available(self.model.state)[0]

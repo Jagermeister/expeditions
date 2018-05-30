@@ -1,3 +1,6 @@
+import random
+from copy import deepcopy
+
 from ..game import Game
 
 
@@ -9,7 +12,8 @@ class TTTGame(Game):
 
     @staticmethod
     def make_from_state(state):
-        return TTTGame(state.board)
+        state = deepcopy(state)
+        return TTTGame(state['board'])
 
     @property
     def state(self):
@@ -29,22 +33,34 @@ class TTTGame(Game):
                 return True
         return False
 
-    def moves_available(self):
-        return [i for i, b in enumerate(self.board) if b == 0]
+    @staticmethod
+    def moves_available(state):
+        board = state['board']
+        return [i for i, b in enumerate(board) if b == 0]
+
+    @staticmethod
+    def move_play_simulate(board, move):
+        board[move] = -1 if sum(board) else 1
+        return board
 
     def move_play(self, move):
         assert(self.board[move] == 0 and move >= 0 and move <= len(self.board))
         super().move_play(move)
         self.board[move] = -1 if sum(self.board) else 1
 
-    def reward(self, player_index):
+    def move_play_random(self):
+        move = random.choice(self.moves_available(self.state))
+        self.move_play(move)
+        return move
+
+    def reward(self):
         for (x, y, z) in [
             (0, 1, 2), (3, 4, 5), (6, 7, 8),
             (0, 3, 6), (1, 4, 7), (2, 5, 8),
             (0, 4, 8), (2, 4, 6)]:
             if self.board[x] == self.board[y] == self.board[z]:
-                return 1.0 if self.board[x] + player_index in [0,1] else 0.0
-        if not len(self.moves_available()): return 0.5
+                return 1
+        if not len(self.moves_available(self.state)): return 0.5
 
     @staticmethod
     def state_display(state):

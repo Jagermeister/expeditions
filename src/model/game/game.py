@@ -30,7 +30,8 @@ class Game(object):
         assert(len(self.players) < self.player_count)
         self.players.append(player)
 
-    def moves_available(self):
+    @staticmethod
+    def moves_available(state):
         pass
     
     def move_play(self, move):
