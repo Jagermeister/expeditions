@@ -59,7 +59,9 @@ class SetupPhase():
 
     def options_set_players(self):
         player_count = self.game_manager.player_count() + 1
-        self.title = 'Select Player {}'.format(player_count)
+        self.title = 'Setting Up >>> {} <<<\r\nSelect Player {}'.format(
+                self.game_manager.game.name,
+                player_count)
         self.options_set(
             self.game_manager.players_available(),
             self.on_player_selected)
@@ -203,12 +205,12 @@ class GameManagerView():
                 self.game_manager.game.board = [0]*9
                 self.game_manager.game.turn_ply = 0
 
-            print('{} Wins by player: {}, {}; Ties: {}'.format(
+            print('#{} Summary: {} : {}; Ties: {}'.format(
                 self.games,
                 self.game_score[0],
                 self.game_score[1],
                 self.game_score[2]
-            ))
+            ), flush=True)
 
             if self.games == 100:
                 input('Game Over')
