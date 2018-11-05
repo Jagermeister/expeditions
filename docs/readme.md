@@ -19,3 +19,7 @@ Selecting Players
 We have Game and Agent (player) interfaces which establish the contract between the turn playing framework and the concrete implementations.
 
 >![Framework](./Framework.png)
+
+
+## Case Study: Tic Tac Toe
+>"255,168 unique games of Tic Tac Toe to be played. Of these, 131,184 are won by the first player, 77,904 are won by the second player, and 46,080 are drawn." [Jesper Juul](https://www.jesperjuul.net/ludologist/2003/12/28/255168-ways-of-playing-tic-tac-toe/)

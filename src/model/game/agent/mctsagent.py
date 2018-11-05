@@ -6,6 +6,7 @@ from .mctsnode import Node
 class MCTSAgent(Agent):
     name = "Monte Carlo Tree Search"
     iterations = None
+    is_debug = False
 
     def __init__(self, model):
         self.model = model
@@ -50,7 +51,9 @@ class MCTSAgent(Agent):
                 reward = abs(reward - 1)
                 node = node.parent
 
-        #print(self.model.state_display(self.model.state))
-        #root_node.children_display()
-        #input('children display')
+        if self.is_debug:
+            print(self.model.state_display(self.model.state))
+            root_node.children_display(top=100)
+            input('children display')
+
         return sorted(root_node.children, key=lambda c: c.visits)[-1]

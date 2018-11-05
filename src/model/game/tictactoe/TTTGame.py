@@ -9,6 +9,8 @@ class TTTGame(Game):
     def __init__(self, board=[0] * 9):
         super().__init__('Tic Tac Toe', 2)
         self.board = board
+        self.reward_win_amount = 1.0
+        self.reward_tie_amount = 0.5
 
     @staticmethod
     def make_from_state(state):
@@ -59,8 +61,8 @@ class TTTGame(Game):
             (0, 3, 6), (1, 4, 7), (2, 5, 8),
             (0, 4, 8), (2, 4, 6)]:
             if self.board[x] == self.board[y] == self.board[z]:
-                return 1
-        if not len(self.moves_available(self.state)): return 0.5
+                return self.reward_win_amount
+        if not len(self.moves_available(self.state)): return self.reward_tie_amount
 
     @staticmethod
     def state_display(state):
