@@ -5,6 +5,7 @@ from model.game.agent.agent import Agent
 from model.game.tictactoe.TTTGame import TTTGame
 from model.game.tictactoe.agent.randomagent import RandomAgent
 from model.game.tictactoe.agent.rulefirstavailableagent import RuleFirstAvailableAgent
+from model.game.tictactoe.agent.manualagent import ManualAgent
 from model.game.tictactoe.agent.mctsagent import TTTMCTSAgent
 
 class GamesManager(object):
@@ -22,7 +23,8 @@ class GamesManager(object):
         self.agents[game_name] = {
             RandomAgent.name: RandomAgent,
             RuleFirstAvailableAgent.name: RuleFirstAvailableAgent,
-            TTTMCTSAgent.name: TTTMCTSAgent
+            TTTMCTSAgent.name: TTTMCTSAgent,
+            ManualAgent.name: ManualAgent
         }
 
     ###

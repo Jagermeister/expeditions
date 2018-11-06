@@ -61,8 +61,9 @@ class TTTGame(Game):
             (0, 3, 6), (1, 4, 7), (2, 5, 8),
             (0, 4, 8), (2, 4, 6)]:
             if self.board[x] == self.board[y] == self.board[z]:
-                return self.reward_win_amount
+                return self.reward_win_amount if self.turn_ply % 2 == 0 else 0
         if not len(self.moves_available(self.state)): return self.reward_tie_amount
+        return 0
 
     @staticmethod
     def state_display(state):

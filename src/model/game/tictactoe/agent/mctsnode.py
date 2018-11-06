@@ -6,6 +6,8 @@ from ..TTTGame import TTTGame
 class TTTNode(Node):
     def __init__(self, state, parent=None, move=None):
         self.moves = []
+        self.try_move_count = 4
+        self.attempts_by_move = {}
         super().__init__(state, parent, move)
 
     def child_add(self, state, move):
@@ -30,10 +32,17 @@ class TTTNode(Node):
         self.untried_move_count = len(self.moves)
 
     def move_untried(self, index):
-        self.untried_move_count -= 1
         move = self.moves[index]
-        del self.moves[index]
-        return move
+        if not (move in self.attempts_by_move):
+            self.attempts_by_move[move] = 0
+
+        self.attempts_by_move[move] += 1
+        attempts = self.attempts_by_move[move]
+        if attempts == self.try_move_count:
+            self.untried_move_count -= 1
+            del self.moves[index]
+
+        return [move, attempts]
 
     def advance_by_move(self, move):
         return { 'board': TTTGame.move_play_simulate(self.state['board'][:], move) }
@@ -46,5 +55,9 @@ class TTTNode(Node):
 
         self.is_terminal = True
         #TTTGame.state_display(terminalM.state)
-        #print('player', 1 if sum(self.state['board']) else 0, 'result', terminalM.reward(0 if sum(self.state['board']) else 1))
+        #print('player', 1 if sum(self.state['board']) else 0, 'result', terminalM.reward())#0 if sum(self.state['board']) else 1))
         self.terminal_reward = terminalM.reward()
+        #print(
+        #    TTTGame.state_display(terminalM.state),
+        #    self.terminal_reward
+        #)

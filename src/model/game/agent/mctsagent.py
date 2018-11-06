@@ -33,16 +33,23 @@ class MCTSAgent(Agent):
             while not node.untried_move_count and node.children:
                 node = node.child_best()
 
+            #if self.is_debug:
+            #    print(root_node.moves, node.move)
+            #    print(root_node.children_display())
+
             # Expand
             if node.untried_move_count:
-                move = node.move_untried(randrange(0, node.untried_move_count))
+                [move, attempts] = node.move_untried(randrange(0, node.untried_move_count))
                 state = node.advance_by_move(move)
-                node.child_add(state, move)
-                node = node.children[-1]
+                if attempts == 1:
+                    node.child_add(state, move)
+                    node = node.children[-1]
+                else:
+                    node = [n for n in node.children if n.move == move][0]
 
             # Rollout
-            if not node.is_terminal:
-                node.advance_to_terminal()
+            #if not node.is_terminal:
+            node.advance_to_terminal()
 
             # Backpropagate
             reward = node.terminal_reward
