@@ -7,6 +7,7 @@ class Game(object):
         self.player_count = player_count
         self.players = []
         self.turn_ply = 0
+        self.move_last = None
 
     @staticmethod
     def make_from_state(state):
@@ -36,6 +37,7 @@ class Game(object):
     
     def move_play(self, move):
         self.turn_ply += 1
+        self.move_last = move
 
     def reward(self, player_index):
         pass

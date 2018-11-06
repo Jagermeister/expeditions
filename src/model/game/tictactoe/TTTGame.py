@@ -3,7 +3,6 @@ from copy import deepcopy
 
 from ..game import Game
 
-
 class TTTGame(Game):
 
     def __init__(self, board=[0] * 9):

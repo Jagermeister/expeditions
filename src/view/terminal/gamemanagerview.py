@@ -199,7 +199,7 @@ class GameManagerView():
                 else:
                     print("Player 1 Won")
 
-            if self.games < 100:
+            if self.games < 500:
                 self.game_score
                 self.phase = PlayPhase(self.game_manager)
                 self.game_manager.game.board = [0]*9
@@ -212,7 +212,7 @@ class GameManagerView():
                 self.game_score[2]
             ), flush=True)
 
-            if self.games == 100:
+            if self.games == 500:
                 input('Game Over')
                 self.state = GameManagerViewState.examine
                 self.phase = ExaminePhase(self.game_manager)

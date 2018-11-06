@@ -20,6 +20,7 @@ class Node():
         self.is_terminal = False
         self.terminal_reward = None
         self.moves_generate()
+        self.reward_stats_win_lose_tie = [0, 0, 0]
 
     def child_add(self, state, move):
         self.children.append(Node(state, self, move))
@@ -48,15 +49,19 @@ class Node():
 
         d = maxDepth-depth
         children = sorted(children, key=lambda c: c.visits, reverse=True)[:top]
-        print('{}\tReward\tVisits\tExploit\tExplore\tNext\tPlay Move\tPull Move'.format(
+        print('{}\tReward\tWin/Lose/Tie\tVisits\tExploit\tExplore\tNext\tPlay Move\tPull Move'.format(
             '#' if not d else '>VV'
         ))
         for i, c in enumerate(children):
             exploit, explore = Node.exploit_score(c), Node.explore_score(self, c)
-            print('{}{}{}\t{}\t{}\t{}\t{}\t{}\t{}'.format(
+            print('{}{}{}\t{}\t{:03d}/ {:03d}/{:03d}\t{}\t{}\t{}\t{}\t{}'.format(
                 '>'*d,
                 'ABCDEF'[d],
-                i, c.reward, c.visits,
+                i, c.reward,
+                c.reward_stats_win_lose_tie[0],
+                c.reward_stats_win_lose_tie[1],
+                c.reward_stats_win_lose_tie[2],
+                c.visits,
                 round(exploit, 2),
                 round(explore, 2),
                 round(exploit + explore, 2),
@@ -67,6 +72,12 @@ class Node():
     def reward_update(self, reward):
         self.reward += reward
         self.visits += 1
+        if reward == 0.5:
+            self.reward_stats_win_lose_tie[2] += 1
+        elif reward:
+            self.reward_stats_win_lose_tie[0] += 1
+        else:
+            self.reward_stats_win_lose_tie[1] += 1
 
     def moves_generate(self):
         # From state, determine possible moves
