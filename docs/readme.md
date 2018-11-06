@@ -36,13 +36,6 @@ First column represents the depth and order of children by visits. **A**# are to
 
 ### Monte Carlo Tree Search Simuations
 Controlling how many simulations run per move impacts the strength of the search.
-<style>
-    .q1 { background: #006d2c; color: white;}
-    .q2 { background: #31a354; color: black;}
-    .q3 { background: #74c476; color: black;}
-    .q4 { background: #bae4b3; color: black;}
-    .b { font-weight: bold; }
-</style>
 <table>
     <tr>
         <th rowspan=2>Simulations</th>
@@ -61,38 +54,38 @@ Controlling how many simulations run per move impacts the strength of the search
     </tr>
     <tr>
         <td>025</td>
-        <td class="q1">458</td><td>012</td><td>030</td><td>|</td>
-        <td class="q2">357</td><td>088</td><td>055</td><td>|</td>
-        <td class="q2">303</td><td>122</td><td>075</td>
+        <td><u>458</u></td><td>012</td><td>030</td><td>|</td>
+        <td>357</td><td>088</td><td>055</td><td>|</td>
+        <td>303</td><td>122</td><td>075</td>
     </tr>
     <tr>
         <td>050</td>
-        <td class="q1">486</td><td>002</td><td>012</td><td>|</td>
-        <td class="q1">407</td><td>046</td><td>047</td><td>|</td>
-        <td class="q2">315</td><td>062</td><td>123</td>
+        <td><u>486</u></td><td>002</td><td>012</td><td>|</td>
+        <td><u>407</u></td><td>046</td><td>047</td><td>|</td>
+        <td>315</td><td>062</td><td>123</td>
     </tr>
     <tr>
         <td>100</td>
-        <td class="q1">493</td><td class="b">000</td><td>007</td><td>|</td>
-        <td class="q1">441</td><td>031</td><td>028</td><td>|</td>
-        <td class="q3">216</td><td>009</td><td>275</td>
+        <td><u>493</u></td><td><i>000</i></td><td>007</td><td>|</td>
+        <td><u>441</u></td><td>031</td><td>028</td><td>|</td>
+        <td>216</td><td>009</td><td>275</td>
     </tr>
     <tr>
         <td>250</td>
-        <td class="q1">490</td><td class="b">000</td><td>010</td><td>|</td>
-        <td class="q1">439</td><td>011</td><td>050</td><td>|</td>
-        <td class="q4">093</td><td>001</td><td>406</td>
+        <td><u>490</u></td><td><i>000</i></td><td>010</td><td>|</td>
+        <td><u>439</u></td><td>011</td><td>050</td><td>|</td>
+        <td>093</td><td>001</td><td>406</td>
     </tr>
     <tr>
         <td>500</td>
-        <td class="q1">495</td><td class="b">000</td><td>005</td><td>|</td>
-        <td class="q1">458</td><td>001</td><td>041</td><td>|</td>
-        <td>041</td><td class="b">000</td><td>459</td>
+        <td><u>495</u></td><td><i>000</i></td><td>005</td><td>|</td>
+        <td><u>458</u></td><td>001</td><td>041</td><td>|</td>
+        <td>041</td><td><i>000</i></td><td>459</td>
     </tr>
     <tr>
         <td>750</td>
-        <td class="q1">497</td><td class="b">000</td><td>003</td><td>|</td>
-        <td class="q1">463</td><td class="b">000</td><td>037</td><td>|</td>
-        <td>006</td><td class="b">000</td><td>494</td>
+        <td><u>497</u></td><td><i>000</i></td><td>003</td><td>|</td>
+        <td><u>463</u></td><td><i>000</i></td><td>037</td><td>|</td>
+        <td>006</td><td><i>000</i></td><td>494</td>
     </tr>
 </table>
