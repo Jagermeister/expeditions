@@ -2,40 +2,15 @@ import os
 
 from colorama import init, Fore, Back, Style
 init()
-from termcolor import cprint, colored
+from termcolor import cprint
 from pyfiglet import figlet_format
 
 from model.gamemanager import GamesManager
+from .listoptiondisplay import ListOptionsDisplay
 
 def display_clear():
     """Utility for cross platform terminal clear"""
     os.system('cls' if os.name == 'nt' else 'clear')
-
-class ListOptionsDisplay():
-    
-    def __init__(self, options=[], on_selected=None):
-        self.options = options
-        self.on_selected = on_selected
-        self.index_selected = 0
-
-    def handle_events(self):
-        answer = input("\n\rType item number or use [P]rev/[N]ext\n\r").upper()
-        options_count = len(self.options)
-        if answer.isdigit():
-            self.index_selected = max(min(options_count, int(answer))-1, 0)
-        elif answer == "P" and self.index_selected > 0:
-            self.index_selected -= 1
-        elif answer == "N" and self.index_selected < options_count - 1:
-            self.index_selected += 1
-        elif not answer:
-            self.on_selected(self.options[self.index_selected])
-
-    def display(self):
-        for i, o in enumerate(self.options):
-            selected = i == self.index_selected
-            f, b = "yellow", "blue"
-            print((">   " if selected else "    ") + colored("{}. {}".format(
-                i+1, o), b if selected else f, 'on_' + (f if selected else b)))
 
 class SetupPhase():
 
@@ -145,15 +120,6 @@ class ExaminePhase():
         for i, p in enumerate(self.game_manager.game.players):
             print('Player {}: {}'.format(i+1, p.name))
         self.game_manager.game.state_display(self.state)
-        if 0 in self.game_manager.game.board:
-            print('Winner: Player {}'.format(1 if self.game_manager.game.turn_ply % 2 else 2))
-        else:
-            r = self.game_manager.game.reward()
-            if r == 0.5:
-                print('Tied!')
-            else:
-                print('Winner: 2')
-
         print('\n\r')
         self.list_displayer.display()
 
@@ -171,6 +137,7 @@ class GameManagerView():
         self.state = GameManagerViewState.init
         self.phase = None
         
+        self.games_to_play = 10
         self.games = 0
         self.game_score = [0, 0, 0]
 
@@ -188,19 +155,21 @@ class GameManagerView():
         elif self.state == GameManagerViewState.play and self.phase.is_complete:
             self.games += 1
             self.game_manager.game.state_display(self.game_manager.game.state)
-            if 0 in self.game_manager.game.board:
-                self.game_score[0 if self.game_manager.game.turn_ply % 2 else 1] += 1
-                print('Player {} wins'.format(1 if self.game_manager.game.turn_ply % 2 else 2))
-            else:
-                r = self.game_manager.game.reward()
-                self.game_score[2 if r == 0.5 else 0] += 1
-                if r == 0.5:
-                    print('Tied!')
-                else:
-                    print("Player 1 Won")
 
-            if self.games < 500:
-                self.game_score
+            r = self.game_manager.game.reward()
+            currPlayerIndex = 0 if self.game_manager.game.turn_ply % 2 else 1
+
+            if r == 1:
+                print('Winner: Player {}'.format(currPlayerIndex + 1))
+                self.game_score[currPlayerIndex] += 1
+            elif r == 0.5:
+                print('Tied!')
+                self.game_score[2] += 1
+            else:
+                print('Winner: 2')
+                self.game_score[1 if currPlayerIndex else 0] += 1
+
+            if self.games < self.games_to_play:
                 self.phase = PlayPhase(self.game_manager)
                 self.game_manager.game.board = [0]*9
                 self.game_manager.game.turn_ply = 0
@@ -212,7 +181,7 @@ class GameManagerView():
                 self.game_score[2]
             ), flush=True)
 
-            if self.games == 500:
+            if self.games == self.games_to_play:
                 input('Game Over')
                 self.state = GameManagerViewState.examine
                 self.phase = ExaminePhase(self.game_manager)

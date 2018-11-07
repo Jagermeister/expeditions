@@ -8,6 +8,9 @@ from model.game.tictactoe.agent.rulefirstavailableagent import RuleFirstAvailabl
 from model.game.tictactoe.agent.manualagent import ManualAgent
 from model.game.tictactoe.agent.mctsagent import TTTMCTSAgent
 
+from model.game.expedition.ExpeditionGame import ExpeditionGame
+from model.game.expedition.agent.manualagent import ManualAgent as ExpeditionManualAgent
+
 class GamesManager(object):
 
     def __init__(self):
@@ -25,6 +28,12 @@ class GamesManager(object):
             RuleFirstAvailableAgent.name: RuleFirstAvailableAgent,
             TTTMCTSAgent.name: TTTMCTSAgent,
             ManualAgent.name: ManualAgent
+        }
+
+        game_name = 'Expeditions'
+        self.games[game_name] = ExpeditionGame
+        self.agents[game_name] = {
+            ExpeditionManualAgent.name: ExpeditionManualAgent
         }
 
     ###
