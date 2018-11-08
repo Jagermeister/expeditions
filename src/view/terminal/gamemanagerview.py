@@ -75,6 +75,7 @@ class PlayPhase():
     
     def __init__(self, game_manager):
         self.game_manager = game_manager
+        self.game_manager.game.setup()
 
     @property
     def is_complete(self):

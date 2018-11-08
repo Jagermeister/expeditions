@@ -18,12 +18,8 @@ class ExpeditionGame(Game):
         self.cardsInDeckCount = 0
         self.discard = []
         # Per color list of card values
-        self.players = []
         self.playerActiveIndex = 0
         # Index of player who will act next
-        self.turnPly = 0
-        # Ply is a half turn. A full turn is
-        # when both players have played.
         self.discardLastColor = None
         # Color that was discarded this Ply which
         # cannot be pulled back by the player
@@ -33,7 +29,7 @@ class ExpeditionGame(Game):
     @staticmethod
     def make_from_state(state, replaceOpponent=True):
         state = deepcopy(state)
-        m = Expedition()
+        m = ExpeditionGame()
         m.deck = state[0]
         m.playerActiveIndex = state[1]
         m.players = [
@@ -43,7 +39,7 @@ class ExpeditionGame(Game):
         m.cardsInDeckCount = state[6]
         if replaceOpponent:
             hand = []
-            for c in m.players[m.playerActiveIndex][Player.handIndex]:
+            for c in m.players[m.playerActiveIndex].player[Player.handIndex]:
                 m.deck = Card.add(m.deck, Card.to_index(c))
                 m.cardsInDeckCount += 1
 
@@ -52,25 +48,25 @@ class ExpeditionGame(Game):
                 hand.append(card)
                 m.cardsInDeckCount -= 1
 
-            m.players[m.playerActiveIndex][Player.handIndex] = hand
+            m.players[m.playerActiveIndex].player[Player.handIndex] = hand
         m.discard = state[3]
         m.discardLastColor = state[5]
         return m
 
     def __str__(self):
         print('\tlen(deck) =', self.cardsInDeckCount)
-        print('\tP1.Hand', self.players[0][Player.handIndex])
-        print('\tP1.Board', self.players[0][Player.boardIndex], bin(self.players[0][Player.boardStateIndex]))
+        print('\tP1.Hand', self.players[0].player[Player.handIndex])
+        print('\tP1.Board', self.players[0].player[Player.boardIndex], bin(self.players[0].player[Player.boardStateIndex]))
         print('\tDiscard', self.discard)
-        print('\tP2.Board', self.players[1][Player.boardIndex], bin(self.players[1][Player.boardStateIndex]))
-        print('\tP2.Hand', self.players[1][Player.handIndex])
+        print('\tP2.Board', self.players[1].player[Player.boardIndex], bin(self.players[1].player[Player.boardStateIndex]))
+        print('\tP2.Hand', self.players[1].player[Player.handIndex])
         print('\tScore:',
-            Player.board_score(self.players[0][Player.boardStateIndex]),
-            Player.board_score(self.players[1][Player.boardStateIndex]))
+            Player.board_score(self.players[0].player[Player.boardStateIndex]),
+            Player.board_score(self.players[1].player[Player.boardStateIndex]))
         return ""
 
     def player(self):
-        return self.players[self.playerActiveIndex]
+        return self.players[self.playerActiveIndex].player
 
     @staticmethod
     def pull_option_deal(hand, deck, cardCount):        
@@ -86,7 +82,7 @@ class ExpeditionGame(Game):
         #    self.deck, self.cardsInDeckCount)
         #hand = self.player()[Player.handIndex]
         #hand.append(card)
-        self.player()[Player.handIndex], self.deck = Expedition.pull_option_deal(
+        self.player()[Player.handIndex], self.deck = ExpeditionGame.pull_option_deal(
             self.player()[Player.handIndex],
             self.deck,
             self.cardsInDeckCount
@@ -98,10 +94,10 @@ class ExpeditionGame(Game):
         self.cardsInDeckCount = Config.cardsInDeckCount
         self.deck = Deck.create(self.cardsInDeckCount)
         self.discard = [[] for _ in range(Config.colorCount)]
-        self.players = [
-            Player.create(),
-            Player.create()
-        ]
+        #self.players = [
+        #    Player.create(),
+        #    Player.create()
+        #]
         # Deal starting hand
         for _ in range(Config.cardsInHandCount * len(self.players)):
             self.card_deal()
@@ -120,7 +116,7 @@ class ExpeditionGame(Game):
         #self.discardLastColor = card[Card.colorIndex]
         hand = self.player()[Player.handIndex]
         discard = self.discard[card[Card.colorIndex]]
-        hand, discard, discardColor = Expedition.play_option_discard(hand, card, discard)
+        hand, discard, discardColor = ExpeditionGame.play_option_discard(hand, card, discard)
         self.player()[Player.handIndex] = hand
         self.discard[card[Card.colorIndex]] = discard
         self.discardLastColor = discardColor
@@ -140,7 +136,7 @@ class ExpeditionGame(Game):
         #p[Player.boardStateIndex] |= 1 << (value + Config.cardsInColorCount * color)
         p = self.player()
         color, _ = card
-        hand, board, boardState = Expedition.play_option_play(
+        hand, board, boardState = ExpeditionGame.play_option_play(
             p[Player.handIndex],
             card,
             p[Player.boardStateIndex])
@@ -158,7 +154,7 @@ class ExpeditionGame(Game):
         # Discard to Hand
         #p[Player.handIndex].append((color, self.discard[color].pop()))
         p = self.player()
-        hand, discard = Expedition.pull_option_pull(
+        hand, discard = ExpeditionGame.pull_option_pull(
             p[Player.handIndex],
             self.discard[color],
             color
@@ -182,8 +178,8 @@ class ExpeditionGame(Game):
 
         # 3. Winner?
         if not self.cardsInDeckCount:
-            p1Score = Player.board_score(self.players[0][Player.boardStateIndex])
-            p2Score = Player.board_score(self.players[1][Player.boardStateIndex])
+            p1Score = Player.board_score(self.players[0].player[Player.boardStateIndex])
+            p2Score = Player.board_score(self.players[1].player[Player.boardStateIndex])
             self.winner = 1 if p1Score > p2Score else (-1 if p2Score > p1Score else 0)
 
     def play_random_turn(self):
@@ -231,8 +227,8 @@ class ExpeditionGame(Game):
 
         # 3. Winner?
         if not self.cardsInDeckCount:
-            p1Score = Player.board_score(self.players[0][Player.boardStateIndex])
-            p2Score = Player.board_score(self.players[1][Player.boardStateIndex])
+            p1Score = Player.board_score(self.players[0].player[Player.boardStateIndex])
+            p2Score = Player.board_score(self.players[1].player[Player.boardStateIndex])
             self.winner = 1 if p1Score > p2Score else (-1 if p2Score > p1Score else 0)
             return move
 
@@ -244,9 +240,9 @@ class ExpeditionGame(Game):
         return [
             self.deck,
             self.playerActiveIndex,
-            self.players[0],
+            self.players[0].player,
             self.discard,
-            self.players[1],
+            self.players[1].player,
             self.discardLastColor,
             self.cardsInDeckCount
         ]
