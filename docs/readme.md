@@ -20,6 +20,8 @@ We have Game and Agent (player) interfaces which establish the contract between 
 
 >![Framework](./Framework.png)
 
+### Adding a Game
+To plug into the menu and playing system, we need to fulfill the contracts from ./model/game/game.py and ./model/game/agent/agent.py. Adding a "Guess the number" game would entail a new game class:
 
 ## Case Study: Tic Tac Toe
 >"255,168 unique games of Tic Tac Toe to be played. Of these, 131,184 are won by the first player, 77,904 are won by the second player, and 46,080 are drawn." [Jesper Juul](https://www.jesperjuul.net/ludologist/2003/12/28/255168-ways-of-playing-tic-tac-toe/)
