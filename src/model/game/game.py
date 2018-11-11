@@ -1,11 +1,18 @@
+import random
 from .agent.agent import Agent
 
 class Game(object):
+    name = None
 
-    def __init__(self, name, player_count):
-        self.name = name
+    def __init__(self, player_count):
         self.player_count = player_count
         self.players = []
+        self.turn_ply = 0
+        # Ply is a half turn. A full turn is
+        # when both players have played.
+        self.move_last = None
+
+    def reset(self):
         self.turn_ply = 0
         self.move_last = None
 
@@ -15,9 +22,7 @@ class Game(object):
 
     @property
     def state(self):
-        return {
-            'turn_ply': self.turn_ply
-        }
+        return { 'turn_ply': self.turn_ply }
 
     @property
     def is_terminal(self):
@@ -38,6 +43,11 @@ class Game(object):
     def move_play(self, move):
         self.turn_ply += 1
         self.move_last = move
+
+    def move_play_random(self):
+        move = random.choice(self.moves_available(self.state))
+        self.move_play(move)
+        return move
 
     def reward(self, player_index):
         pass

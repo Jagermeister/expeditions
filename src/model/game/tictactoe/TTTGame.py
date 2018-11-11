@@ -4,12 +4,17 @@ from copy import deepcopy
 from ..game import Game
 
 class TTTGame(Game):
+    name = 'Tic Tac Toe'
 
     def __init__(self, board=[0] * 9):
-        super().__init__('Tic Tac Toe', 2)
+        super().__init__(2)
         self.board = board
         self.reward_win_amount = 1.0
         self.reward_tie_amount = 0.5
+
+    def reset(self):
+        super().reset()
+        self.board = [0] * 9
 
     @staticmethod
     def make_from_state(state):
@@ -48,11 +53,6 @@ class TTTGame(Game):
         assert(self.board[move] == 0 and move >= 0 and move <= len(self.board))
         super().move_play(move)
         self.board[move] = -1 if sum(self.board) else 1
-
-    def move_play_random(self):
-        move = random.choice(self.moves_available(self.state))
-        self.move_play(move)
-        return move
 
     def reward(self):
         for (x, y, z) in [

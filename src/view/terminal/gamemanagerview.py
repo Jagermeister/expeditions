@@ -140,7 +140,7 @@ class GameManagerView():
         
         self.games_to_play = 10
         self.games = 0
-        self.game_score = [0, 0, 0]
+        self.game_score_by_player = {}
 
     def handle_events(self):
         if self.phase:
@@ -153,33 +153,40 @@ class GameManagerView():
         elif self.state == GameManagerViewState.setup and self.phase.is_complete:
             self.state = GameManagerViewState.play
             self.phase = PlayPhase(self.game_manager)
+            for i in range(self.game_manager.game.player_count):
+                self.game_score_by_player[i] = 0
+            print('Game {} - Play!'.format(self.games+1))
+
         elif self.state == GameManagerViewState.play and self.phase.is_complete:
             self.games += 1
             self.game_manager.game.state_display(self.game_manager.game.state)
 
             r = self.game_manager.game.reward()
-            currPlayerIndex = 0 if self.game_manager.game.turn_ply % 2 else 1
+            if self.game_manager.game.player_count == 1:
+                currPlayerIndex = 0
+            else:
+                currPlayerIndex = 0 if self.game_manager.game.turn_ply % self.game_manager.game.player_count else 1
 
             if r == 1:
                 print('Winner: Player {}'.format(currPlayerIndex + 1))
-                self.game_score[currPlayerIndex] += 1
+                self.game_score_by_player[currPlayerIndex] += 1
             elif r == 0.5:
                 print('Tied!')
-                self.game_score[2] += 1
+                for key in self.game_score_by_player:
+                    self.game_score_by_player[key] += 0.5
             else:
-                print('Winner: 2')
-                self.game_score[1 if currPlayerIndex else 0] += 1
+                print('Player 1 Lost')
+                for key in self.game_score_by_player:
+                    if key != currPlayerIndex:
+                        self.game_score_by_player[key] += 1
 
             if self.games < self.games_to_play:
                 self.phase = PlayPhase(self.game_manager)
-                self.game_manager.game.board = [0]*9
-                self.game_manager.game.turn_ply = 0
+                self.game_manager.game.reset()
 
-            print('#{} Summary: {} : {}; Ties: {}'.format(
+            print('Game {} - Score By Players: {}\n\r'.format(
                 self.games,
-                self.game_score[0],
-                self.game_score[1],
-                self.game_score[2]
+                ', '.join([str(self.game_score_by_player[key]) for key in self.game_score_by_player])
             ), flush=True)
 
             if self.games == self.games_to_play:

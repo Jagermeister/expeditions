@@ -11,6 +11,9 @@ from model.game.tictactoe.agent.mctsagent import TTTMCTSAgent
 from model.game.expedition.ExpeditionGame import ExpeditionGame
 from model.game.expedition.agent.manualagent import ManualAgent as ExpeditionManualAgent
 
+from model.game.guessnumber.GuessGame import GuessGame
+from model.game.guessnumber.agent.manualagent import ManualAgent as GuessNumberManualAgent
+
 class GamesManager(object):
 
     def __init__(self):
@@ -21,20 +24,26 @@ class GamesManager(object):
         self.game_states = []
 
     def game_add(self):
-        game_name = 'Tic Tac Toe'
-        self.games[game_name] = TTTGame
-        self.agents[game_name] = {
-            RandomAgent.name: RandomAgent,
-            RuleFirstAvailableAgent.name: RuleFirstAvailableAgent,
-            TTTMCTSAgent.name: TTTMCTSAgent,
-            ManualAgent.name: ManualAgent
-        }
+        self._game_add_with_players(
+            TTTGame,
+            [RandomAgent, RuleFirstAvailableAgent, TTTMCTSAgent, ManualAgent]
+        )
 
-        game_name = 'Expeditions'
-        self.games[game_name] = ExpeditionGame
-        self.agents[game_name] = {
-            ExpeditionManualAgent.name: ExpeditionManualAgent
-        }
+        self._game_add_with_players(
+            ExpeditionGame,
+            [ExpeditionManualAgent]
+        )
+
+        self._game_add_with_players(
+            GuessGame,
+            [GuessNumberManualAgent]
+        )
+
+    def _game_add_with_players(self, game, players):
+        self.games[game.name] = game
+        self.agents[game.name] = {}
+        for p in players:
+            self.agents[game.name][p.name] = p
 
     ###
     #   GAMES

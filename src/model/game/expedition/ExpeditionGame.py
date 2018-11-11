@@ -10,9 +10,10 @@ from .player import Player
 Config = Config()
 
 class ExpeditionGame(Game):
+    name = 'Expeditions'
 
     def __init__(self):
-        super().__init__('Expeditions', 2)
+        super().__init__(2)
         self.deck = 0b0
         # Binary representation of the cards
         self.cardsInDeckCount = 0
@@ -25,6 +26,15 @@ class ExpeditionGame(Game):
         # cannot be pulled back by the player
         self.winner = None
         # Query end result
+
+    def reset():
+        super().reset()
+        self.deck = 0b0
+        self.cardsInDeckCount = 0
+        self.discard = []
+        self.playerActiveIndex = 0
+        self.discardLastColor = None
+        self.winner = None
 
     @staticmethod
     def make_from_state(state, replaceOpponent=True):
