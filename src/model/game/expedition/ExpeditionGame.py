@@ -11,9 +11,9 @@ Config = Config()
 
 class ExpeditionGame(Game):
     name = 'Expeditions'
+    player_count = 2
 
     def __init__(self):
-        super().__init__(2)
         self.deck = 0b0
         # Binary representation of the cards
         self.cardsInDeckCount = 0
@@ -267,7 +267,3 @@ class ExpeditionGame(Game):
 
     def reward(self):
         pass
-
-    @staticmethod
-    def state_display(state):
-        print (state)

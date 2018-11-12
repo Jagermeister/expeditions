@@ -3,9 +3,9 @@ from .agent.agent import Agent
 
 class Game(object):
     name = None
+    player_count = None
 
-    def __init__(self, player_count):
-        self.player_count = player_count
+    def __init__(self):
         self.players = []
         self.turn_ply = 0
         # Ply is a half turn. A full turn is
@@ -52,8 +52,10 @@ class Game(object):
     def reward(self, player_index):
         pass
 
-    @staticmethod
-    def state_display(state):
+    def state_display(self, state=None):
+        if not state:
+            state = self.state
+
         print('Turn: {}, Last Player: {}'.format(
-            state['turn_ply'] // 2,
-            1 if state['turn_ply'] % 2 else 2))
+            state['turn_ply'] // self.player_count,
+            state['turn_ply'] % self.player_count + 1))

@@ -1,5 +1,4 @@
-from ...agent.agent import Agent
-from ..TTTGame import TTTGame
+from .agent import Agent
 
 class ManualAgent(Agent):
     name = 'Manual'

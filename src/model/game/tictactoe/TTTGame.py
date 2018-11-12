@@ -5,9 +5,9 @@ from ..game import Game
 
 class TTTGame(Game):
     name = 'Tic Tac Toe'
+    player_count = 2
 
     def __init__(self, board=[0] * 9):
-        super().__init__(2)
         self.board = board
         self.reward_win_amount = 1.0
         self.reward_tie_amount = 0.5
@@ -64,9 +64,11 @@ class TTTGame(Game):
         if not len(self.moves_available(self.state)): return self.reward_tie_amount
         return 0
 
-    @staticmethod
-    def state_display(state):
-        super(TTTGame, TTTGame).state_display(state)
+    def state_display(self, state=None):
+        if not state:
+            state = self.state
+
+        super().state_display(state)
         print('\t', end='')
         for i, c in enumerate(state['board']):
             print('X' if c == 1 else ('O' if c == -1 else '?'), end='')

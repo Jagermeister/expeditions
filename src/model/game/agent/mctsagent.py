@@ -54,7 +54,7 @@ class MCTSAgent(Agent):
                 node = node.parent
 
         if self.is_debug:
-            print(self.model.state_display(self.model.state))
+            self.model.state_display()
             root_node.children_display(top=100)
             input('children display')
 

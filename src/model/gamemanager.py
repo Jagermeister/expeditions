@@ -1,18 +1,18 @@
 from copy import deepcopy
 
 from model.game.agent.agent import Agent
+from model.game.agent.manualagent import ManualAgent
 
 from model.game.tictactoe.TTTGame import TTTGame
 from model.game.tictactoe.agent.randomagent import RandomAgent
 from model.game.tictactoe.agent.rulefirstavailableagent import RuleFirstAvailableAgent
-from model.game.tictactoe.agent.manualagent import ManualAgent
+from model.game.tictactoe.agent.manualagent import ManualAgent as TTTManualAgent
 from model.game.tictactoe.agent.mctsagent import TTTMCTSAgent
 
 from model.game.expedition.ExpeditionGame import ExpeditionGame
 from model.game.expedition.agent.manualagent import ManualAgent as ExpeditionManualAgent
 
 from model.game.guessnumber.GuessGame import GuessGame
-from model.game.guessnumber.agent.manualagent import ManualAgent as GuessNumberManualAgent
 
 class GamesManager(object):
 
@@ -26,7 +26,7 @@ class GamesManager(object):
     def game_add(self):
         self._game_add_with_players(
             TTTGame,
-            [RandomAgent, RuleFirstAvailableAgent, TTTMCTSAgent, ManualAgent]
+            [RandomAgent, RuleFirstAvailableAgent, TTTMCTSAgent, TTTManualAgent]
         )
 
         self._game_add_with_players(
@@ -36,7 +36,7 @@ class GamesManager(object):
 
         self._game_add_with_players(
             GuessGame,
-            [GuessNumberManualAgent]
+            [ManualAgent]
         )
 
     def _game_add_with_players(self, game, players):

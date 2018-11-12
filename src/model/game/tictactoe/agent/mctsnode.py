@@ -54,10 +54,4 @@ class TTTNode(Node):
             terminalM.move_play_random()
 
         self.is_terminal = True
-        #TTTGame.state_display(terminalM.state)
-        #print('player', 1 if sum(self.state['board']) else 0, 'result', terminalM.reward())#0 if sum(self.state['board']) else 1))
         self.terminal_reward = terminalM.reward()
-        #print(
-        #    TTTGame.state_display(terminalM.state),
-        #    self.terminal_reward
-        #)

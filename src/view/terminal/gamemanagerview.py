@@ -89,8 +89,6 @@ class PlayPhase():
 
     def display(self):
         pass
-        #print('Play Mode')
-        #self.game_manager.game.state_display(self.game_manager.game.state)
 
 class ExaminePhase():
     
@@ -159,7 +157,7 @@ class GameManagerView():
 
         elif self.state == GameManagerViewState.play and self.phase.is_complete:
             self.games += 1
-            self.game_manager.game.state_display(self.game_manager.game.state)
+            self.game_manager.game.state_display()
 
             r = self.game_manager.game.reward()
             if self.game_manager.game.player_count == 1:
