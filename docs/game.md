@@ -39,6 +39,7 @@ class GamesManager(object):
 ```
 
 This should have created a new game and allowed it to be displayed as an option:
+
 ![Game Selection](./Game_01.png)
 
 ![Player Selection](./Game_02.png)
