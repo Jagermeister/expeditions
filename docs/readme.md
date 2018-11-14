@@ -1,9 +1,10 @@
 # Game, Search, Learn
 
-Framework for running simulations on different games with different player strategies. Inspiration for this project was to utilize and understand the [Monte Carlo tree search](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search).
+Framework for running simulations on games with different player strategies. Inspiration for this project was to utilize and understand the [Monte Carlo tree search](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search).
 
 ## Installation
 `pip install -r requirements.txt`
+All these requirements are just for enhanced termainl layout and coloring.
 
 ## Execution
 `python src/main.py`
