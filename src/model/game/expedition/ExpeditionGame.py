@@ -27,7 +27,7 @@ class ExpeditionGame(Game):
         self.winner = None
         # Query end result
 
-    def reset():
+    def reset(self):
         super().reset()
         self.deck = 0b0
         self.cardsInDeckCount = 0
