@@ -14,6 +14,7 @@ class ExpeditionGame(Game):
     player_count = 2
 
     def __init__(self):
+        super().__init__()
         self.deck = 0b0
         # Binary representation of the cards
         self.cardsInDeckCount = 0

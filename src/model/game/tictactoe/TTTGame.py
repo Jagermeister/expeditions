@@ -8,6 +8,7 @@ class TTTGame(Game):
     player_count = 2
 
     def __init__(self, board=[0] * 9):
+        super().__init__()
         self.board = board
         self.reward_win_amount = 1.0
         self.reward_tie_amount = 0.5

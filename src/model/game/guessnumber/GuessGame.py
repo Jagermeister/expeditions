@@ -27,7 +27,7 @@ class GuessGame(Game):
     @staticmethod
     def make_from_state(state):
         state = deepcopy(state)
-        return TTTGame(state['secret_number'])
+        return state
 
     @property
     def state(self):
