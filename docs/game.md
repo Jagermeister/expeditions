@@ -50,6 +50,3 @@ Not the greatest game - but we have been able to plug into the existing framewor
 
 ## Building out game logic
 The point of this repository isn't to focus on game play logic so we will spend time describing which functions need to be created and how that interacts with the greater framework. To review the completed class, find it within `model/game/guessnumber`.
-
-### Constructor and resetting game state
-
