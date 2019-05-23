@@ -4,7 +4,7 @@ Framework for running simulations on games with different player strategies. Ins
 
 ## Installation
 `pip install -r requirements.txt`
-All these requirements are just for enhanced termainl layout and coloring.
+These requirements are for enhanced termainl layout and coloring.
 
 ## Execution
 `python src/main.py`
