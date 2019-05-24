@@ -11,17 +11,22 @@ $ python -m venv env
 $ source env/Scripts/activate
 $ pip install -r requirements.txt
 ```
-All these requirements are just for enhanced termainl layout and coloring.
+These requirements are for enhanced termainl layout and coloring.
+
 
 ## Execution
 `python src/main.py`
 
-Selecting Game:
->![Introduction](./01_Intro.png)
-
-Selecting Players
->![Players](./02_Players.png)
-
+<table>
+    <tr>
+        <td>Selecting Game</td>
+        <td>Selecting Players</td>
+    </tr>
+    <tr>
+        <td><img src="./01_Intro.png"/></td>
+        <td><img src="./02_Players.png"/></td>
+    </tr>
+</table>
 
 ## Framework
 We have Game and Agent (player) interfaces which establish the contract between the turn playing framework and the concrete implementations.
