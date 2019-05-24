@@ -1,6 +1,6 @@
-from model.model import Expedition
-from mcts.mcts_model import ExpeditionNode
-from mcts.mcts import UCT
+from src.model.model import Expedition
+from src.mcts.mcts_model import ExpeditionNode
+from src.mcts.mcts import UCT
 
 from colorama import init, Fore, Back, Style
 init()
@@ -8,7 +8,7 @@ from termcolor import cprint, colored
 from pyfiglet import figlet_format
 
 import time
-from model.player import Player
+from src.model.player import Player
 
 def run_games(n):
     game = Expedition()

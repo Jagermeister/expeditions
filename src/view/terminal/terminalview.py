@@ -7,8 +7,8 @@ init()
 from termcolor import cprint, colored
 from pyfiglet import figlet_format
 
-from view import viewinterface as v
-from view.terminal.gamemanagerview import GameManagerView
+from src.view import viewinterface as v
+from src.view.terminal.gamemanagerview import GameManagerView
 
 class TerminalState(object):
     """describe mode of terminal view from intial load, menu, and game"""

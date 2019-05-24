@@ -1,5 +1,5 @@
 """Entry point"""
-from view import viewfactory as vf
+from src.view import viewfactory as vf
 
 def main():
     """simple game loop to link a view with our model logic"""

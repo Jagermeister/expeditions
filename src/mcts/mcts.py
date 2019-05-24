@@ -1,6 +1,6 @@
 from math import sqrt, log
 from random import randrange
-from model.config import Config
+from src.model.config import Config
 Config = Config()
 from colorama import init, Fore, Back, Style
 init()

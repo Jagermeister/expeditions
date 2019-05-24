@@ -5,8 +5,8 @@ init()
 from termcolor import cprint
 from pyfiglet import figlet_format
 
-from model.gamemanager import GamesManager
-from .listoptiondisplay import ListOptionsDisplay
+from src.model.gamemanager import GamesManager
+from src.view.terminal.listoptiondisplay import ListOptionsDisplay
 
 def display_clear():
     """Utility for cross platform terminal clear"""

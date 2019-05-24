@@ -1,8 +1,10 @@
-from .mcts import Node
-from model.player import Player
-from model.card import Card
-from model.model import Expedition as M
+
 from copy import deepcopy
+
+from .mcts import Node
+from src.model.player import Player
+from src.model.card import Card
+from src.model.model import Expedition as M
 
 
 class ExpeditionNode(Node):
