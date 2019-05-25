@@ -483,16 +483,6 @@ src\model\game\two2seven\two2seven.py:6:0: C0111: Missing class docstring (missi
 src\model\game\two2seven\two2seven.py:10:4: W0235: Useless super delegation in method '__init__' (useless-super-delegation)
 src\model\game\two2seven\two2seven.py:1:0: W0611: Unused import random (unused-import)
 src\model\game\two2seven\two2seven.py:2:0: W0611: Unused deepcopy imported from copy (unused-import)
-************* Module src.view.viewfactory
-src\view\viewfactory.py:5:0: C0304: Final newline missing (missing-final-newline)
-src\view\viewfactory.py:1:0: C0111: Missing module docstring (missing-docstring)
-************* Module src.view.viewinterface
-src\view\viewinterface.py:22:0: C0304: Final newline missing (missing-final-newline)
-src\view\viewinterface.py:6:8: W0107: Unnecessary pass statement (unnecessary-pass)
-src\view\viewinterface.py:10:8: W0107: Unnecessary pass statement (unnecessary-pass)
-src\view\viewinterface.py:14:8: W0107: Unnecessary pass statement (unnecessary-pass)
-src\view\viewinterface.py:18:8: W0107: Unnecessary pass statement (unnecessary-pass)
-src\view\viewinterface.py:22:8: W0107: Unnecessary pass statement (unnecessary-pass)
 ************* Module src.view.__init__
 src\view\__init__.py:1:0: R0801: Similar lines in 2 files
 ==src.model.game.expedition.player:0
@@ -955,5 +945,5 @@ src\view\__init__.py:1:0: R0801: Similar lines in 2 files
     def child_score(parent, child): (duplicate-code)
 
 ------------------------------------------------------------------
-Your code has been rated at 6.10/10 (previous run: 4.26/10, +1.84)
+Your code has been rated at 6.17/10 (previous run: 6.10/10, +0.07)
 

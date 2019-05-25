@@ -1,43 +1,38 @@
 """Terminal view for model display"""
-import os
-import time
 
-from colorama import init, Fore, Back, Style
-init()
-from termcolor import cprint, colored
-from pyfiglet import figlet_format
+from enum import Enum
 
 from src.view import viewinterface as v
 from src.view.terminal.gamemanagerview import GameManagerView
 
-class TerminalState(object):
+
+class TerminalState(Enum):
     """describe mode of terminal view from intial load, menu, and game"""
-    load = 0 #Initial load
-    menu = 1 #Menu Screen
-    game_play = 2 #Play Game
-    game_review = 3
-    over = 4 #Game Over
+    LOAD = 0        # Initial load
+    MENU = 1        # Menu Screen
+    GAME_PLAY = 2   # Play Game
+    GAME_REVIEW = 3 # Review Game State
+    GAME_OVER = 4        # Game Over
 
 class TerminalView(v.ViewInterface):
+    """ Concrete command line display """
 
     def init(self):
-        """Keep model and start new game"""
+        """ Keep model and start new game """
         self.game_manager = GameManagerView()
         #self.view_state = TerminalState.load
 
     def handle_events(self):
+        """ Process actions and interact with model """
         self.game_manager.handle_events()
-        #if self.view_state == TerminalState.menu:
-        #    self.game_manager.handle_events()
-        #elif self.view_state == TerminalState.game_review:
-        #    self.game_manager.handle_events()
 
     def update(self):
-        """no internal state to update for terminal view"""
+        """ Internal state of view objects """
         self.game_manager.update()
 
     def display(self):
+        """ Visual display of state """
         self.game_manager.display()
 
     def quit(self):
-        pass
+        """ Unload any assets before exit """

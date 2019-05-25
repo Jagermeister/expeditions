@@ -74,18 +74,20 @@ class ExpeditionNode(Node):
             move = self.moves_discard_deal[index]
             del self.moves_discard_deal[index]
             return ('discard', move)
-        elif index < a + b:
+
+        if index < a + b:
             move = self.moves_discard_pull[index - a]
             del self.moves_discard_pull[index - a]
             return ('discard', move)
-        elif index < a + b + c:
+
+        if index < a + b + c:
             move = self.moves_play_deal[index - a - b]
             del self.moves_play_deal[index - a - b]
             return ('play', move)
-        else:
-            move = self.moves_play_pull[index - a - b - c]
-            del self.moves_play_pull[index - a - b - c]
-            return ('play', move)
+
+        move = self.moves_play_pull[index - a - b - c]
+        del self.moves_play_pull[index - a - b - c]
+        return ('play', move)
 
     def advance_by_move(self, move):
         action, (play, pull) = move
