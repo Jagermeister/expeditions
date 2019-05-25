@@ -1,16 +1,18 @@
+""" Concrete Expedition implementation of Node """
 
 from copy import deepcopy
 
-from .mcts import Node
+from src.mcts.node import Node
 from src.model.player import Player
 from src.model.card import Card
 from src.model.model import Expedition as M
 
 
 class ExpeditionNode(Node):
-    # State: deck, playerActiveIndex,
-    #   players[0], discard, players[1],
-    #   discardLastColor, deckCardCount
+    """ State: deck, playerActiveIndex,
+        players[0], discard, players[1],
+        discardLastColor, deckCardCount
+    """
     deckIndex = 0
     playerActiveIndex = 1
     player1Index = 2
@@ -24,10 +26,12 @@ class ExpeditionNode(Node):
         self.moves_discard_pull = []
         self.moves_play_deal = []
         self.moves_play_pull = []
+        self.terminal_reward = None
         super().__init__(state, parent, move)
 
     def _player(self):
-        return self.state[self.player2Index if self.state[self.playerActiveIndex] else self.player1Index]
+        player_active = self.state[self.playerActiveIndex]
+        return self.state[self.player2Index if player_active else self.player1Index]
 
     def _discard(self):
         return self.state[self.discardIndex]
@@ -56,7 +60,10 @@ class ExpeditionNode(Node):
             for pull in pulls:
                 self.moves_play_pull.append((play, pull))
 
-        self.untried_move_count = len(self.moves_discard_deal) + len(self.moves_discard_pull) + len(self.moves_play_deal) + len(self.moves_play_pull)
+        self.untried_move_count = len(self.moves_discard_deal) +\
+            len(self.moves_discard_pull) +\
+            len(self.moves_play_deal) +\
+            len(self.moves_play_pull)
 
     def move_untried(self, index):
         a = len(self.moves_discard_deal)
@@ -83,49 +90,50 @@ class ExpeditionNode(Node):
     def advance_by_move(self, move):
         action, (play, pull) = move
         state = deepcopy(self.state)
+        player_active = 4 if state[self.playerActiveIndex] else 2
         if action == 'discard':
-            hand, discard, discardLastColor = M.play_option_discard(
-                state[4 if state[self.playerActiveIndex] else 2][Player.handIndex],
+            hand, discard, discard_last_color = M.play_option_discard(
+                state[player_active][Player.handIndex],
                 play,
                 state[self.discardIndex][play[Card.colorIndex]])
-            state[4 if state[self.playerActiveIndex] else 2][Player.handIndex] = hand
+            state[player_active][Player.handIndex] = hand
             state[self.discardIndex][play[Card.colorIndex]] = discard
-            state[self.discardLastColorIndex] = discardLastColor
+            state[self.discardLastColorIndex] = discard_last_color
         else:
-            hand, board, boardState = M.play_option_play(
-                state[4 if state[self.playerActiveIndex] else 2][Player.handIndex],
+            hand, board, board_state = M.play_option_play(
+                state[player_active][Player.handIndex],
                 play,
-                state[4 if state[self.playerActiveIndex] else 2][Player.boardStateIndex])
-            state[4 if state[self.playerActiveIndex] else 2][Player.handIndex] = hand
-            state[4 if state[self.playerActiveIndex] else 2][Player.boardIndex][play[Card.colorIndex]] = board
-            state[4 if state[self.playerActiveIndex] else 2][Player.boardStateIndex] = boardState
+                state[player_active][Player.boardStateIndex])
+            state[player_active][Player.handIndex] = hand
+            state[player_active][Player.boardIndex][play[Card.colorIndex]] = board
+            state[player_active][Player.boardStateIndex] = board_state
             state[self.discardLastColorIndex] = None
 
         if pull == 'd':
             hand, deck = M.pull_option_deal(
-                state[4 if state[self.playerActiveIndex] else 2][Player.handIndex],
+                state[player_active][Player.handIndex],
                 state[self.deckIndex],
                 state[self.deckCardCount])
-            state[4 if state[self.playerActiveIndex] else 2][Player.handIndex] = hand
+            state[player_active][Player.handIndex] = hand
             state[self.deckIndex] = deck
             state[self.deckCardCount] -= 1
         else:
             hand, discard = M.pull_option_pull(
-                state[4 if state[self.playerActiveIndex] else 2][Player.handIndex],
+                state[player_active][Player.handIndex],
                 state[self.discardIndex][pull],
                 pull
             )
-            state[4 if state[self.playerActiveIndex] else 2][Player.handIndex] = hand
+            state[player_active][Player.handIndex] = hand
             state[self.discardIndex][pull] = discard
-        
+
         state[self.playerActiveIndex] = 0 if state[self.playerActiveIndex] else 0
         return state
 
     def advance_to_terminal(self):
-        #From state, play random until end
-        terminalM = M.make_from_state(self.state)
-        while terminalM.cardsInDeckCount and terminalM.winner is None:
-            terminalM.play_random_turn()
+        """ From state, play random until end """
+        terminal_move = M.make_from_state(self.state)
+        while terminal_move.cardsInDeckCount and terminal_move.winner is None:
+            terminal_move.play_random_turn()
 
         self.is_terminal = True
-        self.terminal_reward = terminalM.winner
+        self.terminal_reward = terminal_move.winner
