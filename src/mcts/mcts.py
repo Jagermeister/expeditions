@@ -1,15 +1,26 @@
+""" Monte Carlo Tree Search
+    Main min-max search algorithm for trees named
+    Upper Confidence Bounds for Trees (UCT)
+"""
+
 from math import sqrt, log
 from random import randrange
-from src.model.config import Config
-Config = Config()
+
 from colorama import init, Fore, Back, Style
+
+from src.model.config import Config
+
+# Initialize colorama and configuration
 init()
+CONFIG = Config()
 
 # Monte Carlo Tree Search
 SCALAR = 1 / sqrt(2.0)
 #Larger values will increase exploitation, smaller will increase exploration
 
 class Node():
+    """ MCTS Node representing a current state """
+
     def __init__(self, state, parent=None, move=None):
         self.visits = 0
         # Each time the node is exploited
@@ -35,24 +46,27 @@ class Node():
     @staticmethod
     def child_score(parent, child):
         return Node.exploit_score(child) + Node.explore_score(parent, child)
+
     @staticmethod
     def exploit_score(child):
         return child.reward / child.visits
+
     @staticmethod
     def explore_score(parent, child):
         return SCALAR * sqrt(2 * log(parent.visits) / child.visits)
+
     @staticmethod
     def move_display(move):
         play, (card, pull) = move
         color, value = card
-        _, c, bColor, fColor = Config.colors[color]
-        value_display = 'X' if value < Config.betCount else str(value + 2 - Config.betCount)
+        _, short_name, color_back, color_fore = CONFIG.colors[color]
+        value_display = 'X' if value < CONFIG.betCount else str(value + 2 - CONFIG.betCount)
         if pull == 'd':
             pull_display = 'pull from deck'
         else:
-            name, _, pbColor, pfColor = Config.colors[pull]
-            pull_display = 'pull discard ' + pbColor + pfColor + name + ' (' + str(pull) + ')'
-        return bColor + fColor + (' ' if len(value_display) else '') + value_display + c + ' ' + \
+            name, _, pull_color_back, pull_color_fore = CONFIG.colors[pull]
+            pull_display = f'pull discard {pull_color_back}{pull_color_fore}{name} ({pull})'
+        return color_back + color_fore + (' ' if len(value_display) else '') + value_display + short_name + ' ' + \
              Back.BLACK + Fore.WHITE + play + ',\t' + pull_display
 
     def children_display(self, children=None, depth=2, maxDepth=2, top=4):
@@ -62,45 +76,46 @@ class Node():
         if children is None:
             children = self.children
 
-        d = maxDepth-depth
+        depth_current = maxDepth - depth
         children = sorted(children, key=lambda c: c.visits, reverse=True)[:top]
         print('{}\tReward\tVisits\tExploit\tExplore\tNext\tPlay Move\tPull Move'.format(
-            '#' if not d else '>VV'
+            '#' if not depth_current else '>VV'
         ))
-        for i, c in enumerate(children):
-            exploit, explore = Node.exploit_score(c), Node.explore_score(self, c)
+        for i, child in enumerate(children):
+            exploit, explore = Node.exploit_score(child), Node.explore_score(self, child)
             print('{}{}{}\t{}\t{}\t{}\t{}\t{}\t{}{}'.format(
-                '>'*d,
-                'ABCDEF'[d],
-                i, c.reward, c.visits,
+                '>'*depth_current,
+                'ABCDEF'[depth_current],
+                i, child.reward, child.visits,
                 round(exploit, 2),
                 round(explore, 2),
                 round(exploit + explore, 2),
-                Node.move_display(c.move),
+                Node.move_display(child.move),
                 Style.RESET_ALL))
             if i == 0 and children[i].children:
-                self.children_display(children[i].children, depth-1)
+                self.children_display(children[i].children, depth - 1)
 
     def reward_update(self, reward):
         self.reward += reward
         self.visits += 1
 
     def moves_generate(self):
-        # From state, determine possible moves
+        """ From state, determine possible moves """
         pass
 
     def move_untried(self, index):
-        # Select untried move by index
+        """ Select untried move by index """
         pass
 
     def advance_by_move(self, move):
-        # Return new state
+        """ Return new state """
         pass
 
-import copy
+
 def UCT(root_node, iterations):
     for i in range(1, iterations+1):
-        if i % 5000 == 0: print('simulation:', i)
+        if i % 5000 == 0:
+            print(f'simulation: {i}')
         node = root_node
 
         # Select candidate
